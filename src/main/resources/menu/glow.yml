@@ -1,0 +1,146 @@
+#
+# [enable-glow] - включает подсветку учасников
+# [disable-glow] - выключает подсветку
+# [set-glow-color] - устанавливает цвет подсветки (или r;g;b или #rrggbb)
+#
+menu:
+  title: "&0Настройка свечения клана"
+  size: 45
+  items:
+    - material: GREEN_STAINED_GLASS_PANE
+      name: "<#52C25A>✔ <gray>| <white>Включить свечение"
+      lore:
+        - ""
+        - " <gray>— <white>Включает подсветку соклановцев"
+        - ""
+      slot: 39
+      left_click_actions:
+        - "[enable-glow]"
+        - "[sound] EXPERIENCE_ORB_PICKUP;1.0;1.0"
+      right_click_actions:
+        - "[enable-glow]"
+        - "[sound] EXPERIENCE_ORB_PICKUP;1.0;1.0"
+
+    - material: RED_STAINED_GLASS_PANE
+      name: "<#C25252>✖ <gray>| <white>Выключить свечение"
+      lore:
+        - ""
+        - " <gray>— <white>Выключает подсветку соклановцев"
+        - ""
+      slot: 41
+      left_click_actions:
+        - "[disable-glow]"
+        - "[sound] EXPERIENCE_ORB_PICKUP;1.0;1.0"
+      right_click_actions:
+        - "[disable-glow]"
+        - "[sound] EXPERIENCE_ORB_PICKUP;1.0;1.0"
+
+    - material: RED_DYE
+      name: "<#C25252>🔥 <gray>| <white>Красный"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#C25252>Красный"
+        - ""
+      slot: 12
+      left_click_actions:
+        - "[set-glow-color] 255;0;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-glow-color] 255;0;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: LIME_DYE
+      name: "<#52C25A>🔥 <gray>| <white>Зелёный"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#52C25A>Зелёный"
+        - ""
+      slot: 13
+      left_click_actions:
+        - "[set-glow-color] 0;255;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-glow-color] 0;255;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: BLUE_DYE
+      name: "<#528BC2>🔥 <gray>| <white>Синий"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#528BC2>Синий"
+        - ""
+      slot: 14
+      left_click_actions:
+        - "[set-glow-color] 0;100;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-glow-color] 0;100;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: PURPLE_DYE
+      name: "<#C252C2>🔥 <gray>| <white>Фиолетовый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#C252C2>Фиолетовый"
+        - ""
+      slot: 21
+      left_click_actions:
+        - "[set-glow-color] 180;0;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-glow-color] 180;0;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: YELLOW_DYE
+      name: "<#FCD05C>🔥 <gray>| <white>Жёлтый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#FCD05C>Жёлтый"
+        - ""
+      slot: 22
+      left_click_actions:
+        - "[set-glow-color] 255;255;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-glow-color] 255;255;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: ORANGE_DYE
+      name: "<#FF8C00>🔥 <gray>| <white>Оранжевый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#FF8C00>Оранжевый"
+        - ""
+      slot: 23
+      left_click_actions:
+        - "[set-glow-color] 255;140;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-glow-color] 255;140;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: PLAYER_HEAD
+      name: "<#F958A3>⌛ <gray>| <white>Личные цвета участников"
+      lore:
+        - ""
+        - " <white>Назначить <#F958A3>индивидуальный <white>цвет"
+        - " <white>свечения каждому участнику"
+        - ""
+      slot: 37
+      left_click_actions:
+        - "[open_menu] player-glow-list"
+        - "[sound] UI_BUTTON_CLICK;1.0;1.0"
+      right_click_actions:
+        - "[open_menu] player-glow-list"
+        - "[sound] UI_BUTTON_CLICK;1.0;1.0"
+
+    - material: ARROW
+      slot: 36
+      name: "<#C25252>✘ <gray>| <white>Назад"
+      lore: []
+      left_click_actions:
+        - "[open_menu] main-menu"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"
+      right_click_actions:
+        - "[open_menu] main-menu"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"

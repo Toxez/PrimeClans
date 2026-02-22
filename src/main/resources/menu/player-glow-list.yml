@@ -1,0 +1,76 @@
+# Плейсхолдеры
+# {player_name} - ник участника
+# {player_status} - онлайн/оффлайн
+# {player_role} - лидер/участник
+# {player_uuid} - uuid участника
+# {member_glow_color} - текущий цвет (#HEX) или "Общий"
+#
+# Плейсхолдеры общие:
+# {clan_name} - название клана
+# {page} - текущая страница
+# {total_pages} - всего страниц
+#
+menu:
+  title: "<black>Свечение участников"
+  size: 54
+  player-slots: [9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35]
+  # Слоты кнопок для перелистывания страниц (если страниц больше 1 появляются автоматически)
+  pagination:
+    prev-slot: 48
+    next-slot: 50
+    prev-item:
+      material: ARROW
+      name: "<#5FBCF1>← <gray>| <white>Предыдущая страница"
+      lore:
+        - ""
+        - " <gray>— <white>Страница: <#5FBCF1>{page} <gray>/ <#5FBCF1>{total_pages}"
+        - ""
+    next-item:
+      material: ARROW
+      name: "<#5FBCF1>→ <gray>| <white>Следующая страница"
+      lore:
+        - ""
+        - " <gray>— <white>Страница: <#5FBCF1>{page} <gray>/ <#5FBCF1>{total_pages}"
+        - ""
+
+  player-item:
+    material: PLAYER_HEAD
+    name: "<white>{player_name}"
+    lore:
+      - ""
+      - " <white>Роль: {player_role}"
+      - " <white>Статус: {player_status}"
+      - ""
+      - " <white>Цвет свечения: <#5FBCF1>{member_glow_color}"
+      - ""
+      - " <white>Нажмите, чтобы <#5FBCF1>выбрать цвет"
+      - ""
+    skull-owner: "{player_uuid}"
+
+  items:
+    - material: AMETHYST_SHARD
+      slot: 4
+      name: "<#5FBCF1>⌛ <gray>| <white>Личные цвета участников"
+      lore:
+        - ""
+        - " <white>Нажмите на <#5FBCF1>участника, <white>чтобы"
+        - " <white>настроить его <#5FBCF1>личный цвет"
+        - ""
+        - " <white>Если цвет не задан — используется"
+        - " <white><#5FBCF1>общий <white>цвет клана"
+        - ""
+      left_click_actions:
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: ARROW
+      slot: 49
+      name: "<#C25252>✘ <gray>| <white>Назад"
+      lore: []
+      left_click_actions:
+        - "[open_menu] glow"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"
+      right_click_actions:
+        - "[open_menu] glow"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"

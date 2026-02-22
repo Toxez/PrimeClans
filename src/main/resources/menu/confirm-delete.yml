@@ -1,0 +1,69 @@
+#
+# [delete_clan] - удаляет клан (по фактам нужен только для этого меню)
+#
+menu:
+  title: "<black>Подтверждение удаления"
+  size: 27
+  items:
+    - slot: 11
+      material: RED_DYE
+      name: "<#C25252>⚠ <gray>| <white>Подтвердить удаление"
+      lore:
+        - ""
+        - " <white>Нажмите, чтобы <#C25252>удалить <white>клан"
+        - " <white>с названием: <#FCD05C>{clan}"
+        - ""
+        - " <gray>— <white>Клан будет удалён <#C25252>навсегда"
+        - " <gray>— <white>Все участники будут исключены"
+        - ""
+        - " <gray>«Лишь утратив всё до конца —"
+        - " <gray>  мы обретаем свободу»"
+        - ""
+      left_click_actions:
+        - "[delete_clan]"
+        - "[sound] ENTITY_GENERIC_EXPLODE;0.6;0.8"
+        - "[close]"
+      right_click_actions:
+        - "[delete_clan]"
+        - "[sound] ENTITY_GENERIC_EXPLODE;0.6;0.8"
+        - "[close]"
+
+    - slot: 15
+      material: LIME_DYE
+      name: "<#52C25A>✔ <gray>| <white>Отмена"
+      lore:
+        - ""
+        - " <white>Нажмите, чтобы <#52C25A>отменить"
+        - " <white>удаление клана"
+        - ""
+        - " <gray>— <white>Может оно того и не <#52C25A>стоит"
+        - " <gray>   <white>А то <#52C25A>50к <white>монет в <#52C25A>никуда <white>пропадут..."
+        - ""
+      left_click_actions:
+        - "[sound] ENTITY_PLAYER_LEVELUP;1.0;1.5"
+        - "[message] <#C25252>✘ <gray>| <white>Удаление клана <#C25252>отменено"
+        - "[close]"
+      right_click_actions:
+        - "[sound] ENTITY_PLAYER_LEVELUP;1.0;1.5"
+        - "[message] <#C25252>✘ <gray>| <white>Удаление клана <#C25252>отменено"
+        - "[close]"
+
+    - slot: 13
+      material: PAPER
+      name: "<#C25252>⚠ <gray>| <white>Внимание"
+      lore:
+        - ""
+        - " <gray>— <white>Вы собираетесь удалить клан"
+        - " <gray>— <white>Название: <#FCD05C>{clan}"
+        - ""
+        - " <gray>— <white>Это действие <#C25252>необратимо"
+        - " <gray>— <white>Все участники потеряют клан"
+        - " <gray>— <white>Данные будут удалены навсегда"
+        - ""
+        - " <gray>— <white>Убедитесь, что вы <#C25252>точно"
+        - "    <white>хотите это сделать"
+        - ""
+      left_click_actions:
+        - "[sound] BLOCK_NOTE_BLOCK_BASS;1.0;0.8"
+      right_click_actions:
+        - "[sound] BLOCK_NOTE_BLOCK_BASS;1.0;0.8"

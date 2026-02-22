@@ -1,0 +1,13 @@
+name: PrimeClans
+version: '${project.version}'
+main: ua.vdev.primeclans.PrimeClans
+api-version: '1.20'
+load: STARTUP
+author: [ Tox_8729 ]
+website: https://t.me/vdev1337
+depend: [VLibAPI, Vault, PlaceholderAPI, packetevents]
+libraries:
+  - com.zaxxer:HikariCP:7.0.1
+
+commands:
+  clan:

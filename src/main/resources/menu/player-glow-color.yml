@@ -1,0 +1,242 @@
+#
+# [set-member-glow-color] #RRGGBB или R;G;B — устанавливает личный цвет участнику
+# [reset-member-glow-color] — сбрасывает на общий цвет клана
+#
+# Плейсхолдеры:
+# {player_name} - ник участника
+# {player_uuid} - uuid участника
+# {current_color} - текущий цвет (#HEX + пометка личный/клановый)
+# {clan_name} - название клана
+#
+menu:
+  title: "<black>Цвет свечения {player_name}"
+  size: 45
+
+  items:
+    - material: PLAYER_HEAD
+      slot: 4
+      name: "<#5FBCF1>♯ <gray>| <white>{player_name}"
+      lore:
+        - ""
+        - " <gray>— <white>Текущий цвет:"
+        - " <gray>   <#5FBCF1>{current_color}"
+        - ""
+        - " <gray>— <white>Выберите новый цвет ниже"
+        - " <gray>   <white>или сбросьте на клановый"
+        - ""
+      skull-owner: "{player_uuid}"
+      left_click_actions:
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: RED_DYE
+      slot: 10
+      name: "<#C25252>🔥 <gray>| <white>Красный"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#C25252>Красный"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 255;0;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 255;0;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: PINK_DYE
+      slot: 11
+      name: "<#FF69B4>🔥 <gray>| <white>Розовый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#FF69B4>Розовый"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 255;105;180"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 255;105;180"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: MAGENTA_DYE
+      slot: 12
+      name: "<#C252C2>🔥 <gray>| <white>Фиолетовый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#C252C2>Фиолетовый"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 180;0;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 180;0;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: BLUE_DYE
+      slot: 13
+      name: "<#528BC2>🔥 <gray>| <white>Синий"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#528BC2>Синий"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 0;100;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 0;100;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: LIGHT_BLUE_DYE
+      slot: 14
+      name: "<#5FBCF1>🔥 <gray>| <white>Голубой"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#5FBCF1>Голубой"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 0;191;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 0;191;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: CYAN_DYE
+      slot: 15
+      name: "<#00CED1>🔥 <gray>| <white>Циановый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#00CED1>Циановый"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 0;206;209"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 0;206;209"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: LIME_DYE
+      slot: 16
+      name: "<#52C25A>🔥 <gray>| <white>Зелёный"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#52C25A>Зелёный"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 0;255;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 0;255;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: YELLOW_DYE
+      slot: 19
+      name: "<#FCD05C>🔥 <gray>| <white>Жёлтый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#FCD05C>Жёлтый"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 255;255;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 255;255;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: ORANGE_DYE
+      slot: 20
+      name: "<#FF8C00>🔥 <gray>| <white>Оранжевый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#FF8C00>Оранжевый"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 255;140;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 255;140;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: WHITE_DYE
+      slot: 21
+      name: "<white>🔥 <gray>| <white>Белый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <white>Белый"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 255;255;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 255;255;255"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: GRAY_DYE
+      slot: 22
+      name: "<gray>🔥 <gray>| <white>Серый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <gray>Серый"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 128;128;128"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 128;128;128"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: BLACK_DYE
+      slot: 23
+      name: "<dark_gray>🔥 <gray>| <white>Чёрный"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <dark_gray>Чёрный"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 26;26;26"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 26;26;26"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: BROWN_DYE
+      slot: 24
+      name: "<#964B00>🔥 <gray>| <white>Коричневый"
+      lore:
+        - ""
+        - " <gray>— <white>Установить цвет: <#964B00>Коричневый"
+        - ""
+      left_click_actions:
+        - "[set-member-glow-color] 150;75;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+      right_click_actions:
+        - "[set-member-glow-color] 150;75;0"
+        - "[sound] ITEM_DYE_USE;1.0;1.0"
+
+    - material: BARRIER
+      slot: 39
+      name: "<#C25252>✖ <gray>| <white>Сбросить цвет"
+      lore:
+        - ""
+        - " <gray>— <white>Удалить личный цвет"
+        - " <gray>   <white>участника"
+        - ""
+        - " <gray>— <white>Будет использоваться"
+        - " <gray>   <white>общий цвет клана"
+        - ""
+      left_click_actions:
+        - "[reset-member-glow-color]"
+        - "[sound] ENTITY_VILLAGER_NO;1.0;1.0"
+      right_click_actions:
+        - "[reset-member-glow-color]"
+        - "[sound] ENTITY_VILLAGER_NO;1.0;1.0"
+
+    - material: ARROW
+      slot: 36
+      name: "<#C25252>✘ <gray>| <white>Назад"
+      lore: []
+      left_click_actions:
+        - "[open_menu] player-glow-list"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"
+      right_click_actions:
+        - "[open_menu] player-glow-list"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"

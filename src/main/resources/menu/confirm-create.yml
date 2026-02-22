@@ -1,0 +1,62 @@
+#
+# [create_clan] - создает клан (по фактам нужен только для этого меню)
+#
+menu:
+  title: "<black>Подтверждение создания"
+  size: 27
+  items:
+    - slot: 11
+      material: LIME_DYE
+      name: "<#52C25A>✔ <gray>| <white>Подтвердить"
+      lore:
+        - ""
+        - " <white>Нажмите, чтобы <#52C25A>создать <white>клан"
+        - " <white>с названием: <#52C25A>{clan}"
+        - ""
+        - " <gray>— <white>Нажимая сюда вы <#52C25A>создадите <white>клан"
+        - ""
+      left_click_actions:
+        - "[create_clan]"
+        - "[sound] ENTITY_PLAYER_LEVELUP;1.0;2.0"
+        - "[close]"
+      right_click_actions:
+        - "[create_clan]"
+        - "[sound] ENTITY_PLAYER_LEVELUP;1.0;2.0"
+        - "[close]"
+
+    - slot: 15
+      material: RED_DYE
+      name: "<#C25252>✖ <gray>| <white>Отменить"
+      lore:
+        - ""
+        - " <white>Нажмите, чтобы <#C25252>прекратить"
+        - " <white>процесс создания"
+        - ""
+        - " <gray>— <white>Вы сможете сделать это <#C25252>позже"
+        - ""
+      left_click_actions:
+        - "[sound] ENTITY_VILLAGER_NO;1.0;1.0"
+        - "[message] <#C25252>✘ <gray>| <white>Создание клана <#C25252>отменено"
+        - "[close]"
+      right_click_actions:
+        - "[sound] ENTITY_VILLAGER_NO;1.0;1.0"
+        - "[message] <#C25252>✘ <gray>| <white>Создание клана <#C25252>отменено"
+        - "[close]"
+
+    - slot: 13
+      material: PAPER
+      name: "<#FCD05C>♯ <gray>| <white>Информация"
+      lore:
+        - ""
+        - " <gray>— <white>Вы создаете новый клан"
+        - " <gray>— <white>Название: <#FCD05C>{clan}"
+        - " <gray>— <white>Стоимость: <#FCD05C>{cost}"
+        - ""
+        - " <gray>— <white>Проверьте <#FCD05C>название <white>клана,"
+        - "    <white>соответствует тому, которое"
+        - "    <white>вы <#FCD05C>правда <white>хотите"
+        - ""
+      left_click_actions:
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"

@@ -1,0 +1,57 @@
+# Лимит участников для уровня 1
+default-max-members: 1
+exp:
+  block-break: 1 # опыт за ломания блока
+  mob-kill: 3 # опыт за килл моба
+  player-kill: 8 # опыт за килл игрока
+
+clan-levels:
+  - level: 2
+    max-members: 5
+    required-exp: 100
+    sound: ENTITY_PLAYER_LEVELUP;1.0;2.0
+    message:
+      - ""
+      - " <#52C25A>✔ <gray>| <white>Ваш клан <#FCD05C>{clan} <white>достиг <gold>2 уровня<white>!"
+      - "    <gray>| <white>Новый лимит участников: <gold>{max_members}"
+      - ""
+
+  - level: 3
+    max-members: 10
+    required-exp: 1000
+    sound: ENTITY_PLAYER_LEVELUP;1.0;2.0
+    message:
+      - ""
+      - " <#52C25A>✔ <gray>| <white>Ваш клан <#FCD05C>{clan} <white>достиг <gold>3 уровня<white>!"
+      - "    <gray>| <white>Новый лимит участников: <gold>{max_members}"
+      - ""
+
+  - level: 4
+    max-members: 15
+    required-exp: 15000
+    sound: ENTITY_PLAYER_LEVELUP;1.0;2.0
+    message:
+      - ""
+      - " <#52C25A>✔ <gray>| <white>Ваш клан <#FCD05C>{clan} <white>достиг <gold>4 уровня<white>!"
+      - "    <gray>| <white>Новый лимит участников: <gold>{max_members}"
+      - ""
+
+  - level: 5
+    max-members: 20
+    required-exp: 20000
+    sound: ENTITY_PLAYER_LEVELUP;1.0;2.0
+    message:
+      - ""
+      - " <#52C25A>✔ <gray>| <white>Ваш клан <#FCD05C>{clan} <white>достиг <gold>5 уровня<white>!"
+      - "    <gray>| <white>Новый лимит участников: <gold>{max_members}"
+      - ""
+
+  - level: 6
+    max-members: 25
+    required-exp: 25000
+    sound: ENTITY_PLAYER_LEVELUP;1.0;2.0
+    message:
+      - ""
+      - " <#52C25A>✔ <gray>| <white>Ваш клан <#FCD05C>{clan} <white>достиг <gold>6 уровня<white>!"
+      - "    <gray>| <white>Новый лимит участников: <gold>{max_members}"
+      - ""

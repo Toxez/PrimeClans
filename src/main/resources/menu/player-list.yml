@@ -1,0 +1,54 @@
+menu:
+  title: "<black>Участники клана {clan_name}"
+  size: 45
+  # Слоты для отображения игроков
+  player-slots: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 35]
+
+  # предмета игрока
+  player-item:
+    material: PLAYER_HEAD
+    skull_owner: "<#46A1FB>{player_name}" # типо отображения для создателя клана
+    name: "<#46A1FB>{player_name}" # а это для обычных нищих
+    lore:
+      - ""
+      - " <white>Роль: {player_role}"
+      - " <white>Статус: {player_status}"
+      - ""
+      - " <white>Нажми, что бы <#46A1FB>настроить <white>его права"
+      - ""
+  # Слоты кнопок для перелистывания страниц (если страниц больше 1 появляются автоматически)
+  pagination:
+    prev-slot: 48
+    next-slot: 50
+    prev-item:
+      material: ARROW
+      name: "<#F83A66>← <gray>| <white>Предыдущая страница"
+      lore:
+        - ""
+        - " <gray>— <white>Страница: <#F83A66>{page} <gray>/ <#F83A66>{total_pages}"
+        - ""
+    next-item:
+      material: ARROW
+      name: "<#F83A66>→ <gray>| <white>Следующая страница"
+      lore:
+        - ""
+        - " <gray>— <white>Страница: <#F83A66>{page} <gray>/ <#F83A66>{total_pages}"
+        - ""
+
+  items:
+    - material: PAPER
+      slot: 37
+      name: "<#DC332E>♯ <gray>| <white>Информация"
+      lore:
+        - ""
+        - " <white>Участников: <#DC332E>{members_count}<gray>/<#DC332E>{members_max}"
+        - " <white>Онлайн: <#DC332E>{members_online} чел."
+        - ""
+
+    - material: ARROW
+      slot: 36
+      name: "<#C25252>✘ <gray>| <white>Назад"
+      lore: []
+      left_click_actions:
+        - "[open_menu] main-menu"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"

@@ -1,0 +1,211 @@
+# Плейсхолдеры:
+# {player_name} - ник участника
+# {player_uuid} - uuid участника
+# {clan_name} - название клана
+#
+# {perm_kick_material} - материал кнопки KICK_MEMBERS
+# {perm_kick_status} - статус KICK_MEMBERS
+# {perm_invite_material} - материал кнопки INVITE_MEMBERS
+# {perm_invite_status} - статус INVITE_MEMBERS
+# {perm_chat_material} - материал кнопки CLAN_CHAT
+# {perm_chat_status} - статус CLAN_CHAT
+# {perm_invest_material} - материал кнопки INVEST_BALANCE
+# {perm_invest_status} - статус INVEST_BALANCE
+# {perm_withdraw_material} - материал кнопки WITHDRAW_BALANCE
+# {perm_withdraw_status} - статус WITHDRAW_BALANCE
+# {perm_pvp_material} - материал кнопки TOGGLE_PVP
+# {perm_pvp_status} - статус TOGGLE_PVP
+# {perm_glow_material} - материал кнопки MANAGE_GLOW
+# {perm_glow_status} - статус MANAGE_GLOW
+# {perm_member_glow_material} - материал кнопки MANAGE_MEMBER_GLOW
+# {perm_member_glow_status} - статус MANAGE_MEMBER_GLOW
+#
+# Права:
+# KICK_MEMBERS - кикать учасников
+# INVITE_MEMBERS - приглашать учасников
+# CLAN_CHAT - писать в клановый чат
+# INVEST_BALANCE - ложить деньги в казну клана
+# WITHDRAW_BALANCE - спимать деньги с казны клана
+# TOGGLE_PVP - переключать пвп в клане
+# MANAGE_GLOW - переключать глоу клана
+# MANAGE_MEMBER_GLOW - глоу для отдельных учасников
+#
+# Акшионы:
+# [toggle-perm] - переключать определенное право игроку
+#
+menu:
+  title: "<black>Права {player_name}"
+  size: 54
+
+  # Материал и статус для каждого права
+  perm-states:
+    enabled:  {material: LIME_DYE, status: "<#52C25A>✔ Разрешено"}
+    disabled: {material: RED_DYE, status: "<#C25252>✘ Запрещено"}
+
+  items:
+    - material: GRAY_STAINED_GLASS_PANE
+      name: " "
+      slots: [10,11,12,13,14,15,16]
+
+    - material: PLAYER_HEAD
+      slot: 4
+      skull-owner: "{player_uuid}"
+      name: "<#5FBCF1>♯ <gray>| <white>{player_name}"
+      lore:
+        - ""
+        - " <white>Клан: <#FCD05C>{clan_name}"
+        - ""
+        - " <gray>— <white>Нажмите на право"
+        - " <gray>   <white>чтобы выдать или забрать его"
+        - ""
+      left_click_actions:
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_kick_material}"
+      slot: 19
+      name: "<#C25252>⚔ <gray>| <white>Кик участников"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет выгонять"
+        - " <gray>   <white>участников из клана"
+        - ""
+        - " <gray>— <white>Статус: {perm_kick_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] KICK_MEMBERS"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] KICK_MEMBERS"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_invite_material}"
+      slot: 20
+      name: "<#52C25A>✉ <gray>| <white>Приглашения"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет приглашать"
+        - " <gray>   <white>игроков в клан"
+        - ""
+        - " <gray>— <white>Статус: {perm_invite_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] INVITE_MEMBERS"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] INVITE_MEMBERS"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_chat_material}"
+      slot: 21
+      name: "<#5FBCF1>💬 <gray>| <white>Клановый чат"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет писать"
+        - " <gray>   <white>в клановый чат"
+        - ""
+        - " <gray>— <white>Статус: {perm_chat_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] CLAN_CHAT"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] CLAN_CHAT"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_invest_material}"
+      slot: 22
+      name: "<#52C25A>💰 <gray>| <white>Пополнение казны"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет вносить"
+        - " <gray>   <white>средства в казну клана"
+        - ""
+        - " <gray>— <white>Статус: {perm_invest_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] INVEST_BALANCE"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] INVEST_BALANCE"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_withdraw_material}"
+      slot: 23
+      name: "<#FCD05C>💸 <gray>| <white>Вывод из казны"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет снимать"
+        - " <gray>   <white>средства из казны клана"
+        - ""
+        - " <gray>— <white>Статус: {perm_withdraw_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] WITHDRAW_BALANCE"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] WITHDRAW_BALANCE"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_pvp_material}"
+      slot: 24
+      name: "<#C25252>⚔ <gray>| <white>Режим PvP"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет включать"
+        - " <gray>   <white>и выключать PvP в клане"
+        - ""
+        - " <gray>— <white>Статус: {perm_pvp_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] TOGGLE_PVP"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] TOGGLE_PVP"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_glow_material}"
+      slot: 25
+      name: "<#5FBCF1>✨ <gray>| <white>Свечение клана"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет включать"
+        - " <gray>   <white>и выключать глоу клана"
+        - ""
+        - " <gray>— <white>Статус: {perm_glow_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] MANAGE_GLOW"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] MANAGE_GLOW"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_member_glow_material}"
+      slot: 31
+      name: "<#C252C2>🎨 <gray>| <white>Цвет глоу участников"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет настраивать"
+        - " <gray>   <white>цвет глоу участников"
+        - ""
+        - " <gray>— <white>Статус: {perm_member_glow_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] MANAGE_MEMBER_GLOW"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] MANAGE_MEMBER_GLOW"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: ARROW
+      slot: 49
+      name: "<#C25252>✘ <gray>| <white>Назад"
+      lore: []
+      left_click_actions:
+        - "[open_menu] player-list"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"
+      right_click_actions:
+        - "[open_menu] player-list"
+        - "[sound] BOOK_PAGE_TURN;0.7;1.2"

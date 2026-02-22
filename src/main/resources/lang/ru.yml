@@ -1,0 +1,222 @@
+help:
+  no-clan:
+    - ""
+    - " <#52C25A><click:suggest_command:/clan create ><hover:show_text:'<gray>Нажмите, чтобы начать создание клана\n<gray>использование: <green>/clan create [назв.]'>/clan create [назв.]</hover></click> <gray>— <white>создать свой клан"
+    - " <#52C25A><click:suggest_command:/clan accept ><hover:show_text:'<gray>Нажмите, чтобы ввести название клана\n<gray>использование: <green>/clan accept [клан]'>/clan accept [клан]</hover></click> <gray>— <white>принять приглашение"
+    - " <gray>— <white>Вы пока не состоите в клане"
+    - ""
+  in-clan:
+    - ""
+    - " <#52C25A><click:suggest_command:/clan invite ><hover:show_text:'<gray>Пригласить нового участника в клан\n<gray>использование: <#52C25A>/clan invite [ник]'>/clan invite [ник]</hover></click> <gray>— <white>пригласить игрока"
+    - " <#C25252><click:suggest_command:/clan delete><hover:show_text:'<red>Внимание! <gray>Это полностью удалит ваш клан\n<gray>без возможности восстановления.'>/clan delete</hover></click> <gray>— <white>расформировать ваш клан"
+    - " <#C25252><click:suggest_command:/clan kick ><hover:show_text:'<gray>Исключить игрока из клана\n<gray>использование: <red>/clan kick [ник]'>/clan kick [ник]</hover></click> <gray>— <white>выгнать игрока"
+    - " <#C25252><click:suggest_command:/clan leave><hover:show_text:'<gray>Покинуть текущий клан\n<red>Внимание! <gray>лидер <red>не может <gray>выйти просто так'>/clan leave</hover></click> <gray>— <white>выйти из клана"
+    - " <#C25252><click:suggest_command:/clan setleader ><hover:show_text:'<gray>Передать права владельца другому игроку\n<red>Внимание! <gray>после передачи прав, лидер - больше не лидер\n<gray>использование: <red>/clan setleader [ник]'>/clan setleader [ник]</hover></click> <gray>— <white>передать лидерство"
+    - " <#52C25A><click:suggest_command:/clan chat ><hover:show_text:'<gray>Отправить сообщение в клановый чат\n<gray>использование: <#52C25A>/clan chat [текст]'>/clan chat [текст]</hover></click> <gray>— <white>написать в чат клана"
+    - " <#52C25A><click:run_command:/clan menu ><hover:show_text:'<gray>Открывает меню клана\n<gray>использование: <#52C25A>/clan menu'>/clan menu</hover></click> <gray>— <white>открыть меню клана"
+    - " <#52C25A><click:run_command:/clan pvp ><hover:show_text:'<gray>Переключения режима пвп\n<gray>использование: <#52C25A>/clan pvp'>/clan pvp</hover></click> <gray>— <white>переключить режим пвп"
+    - " <#FCD05C><click:run_command:/clan balance ><hover:show_text:'<gray>Показать баланс казны клана\n<gray>использование: <#FCD05C>/clan balance'>/clan balance</hover></click> <gray>— <white>баланс казны"
+    - " <#FCD05C><click:suggest_command:/clan invest ><hover:show_text:'<gray>Внести деньги в казну клана\n<gray>использование: <#FCD05C>/clan invest [сумма]'>/clan invest [сумма]</hover></click> <gray>— <white>пополнить казну"
+    - " <#FCD05C><click:suggest_command:/clan withdraw ><hover:show_text:'<gray>Вывести деньги из казны <red>(только лидер)\n<gray>использование: <#FCD05C>/clan withdraw [сумма]'>/clan withdraw [сумма]</hover></click> <gray>— <white>вывести из казны"
+    - " <#52C25A><click:run_command:/clan info ><hover:show_text:'<gray>Показать информацию о клане\n<gray>использование: <#52C25A>/clan info'>/clan info</hover></click> <gray>— <white>информация о клане"
+    - " <#52C25A><click:run_command:/clan glow><hover:show_text:'<gray>Включить/выключить свечение клана\n<gray>использование: <#52C25A>/clan glow'>/clan glow</hover></click> <gray>— <white>переключить свечение клана"
+    - " <gray>— <white>Вы состоите в клане: <#FCD05C>{clan}"
+    - ""
+
+create:
+  usage:
+    - ""
+    - " <#C25252>Ошибка! <white>Нужно указать название"
+    - " <gray>— <#52C25A>/clan create [назв.]"
+    - ""
+  already-exists: "<#C25252>✘ <gray>| <white>Клан <#FCD05C>{clan} <white>уже существует"
+  created: "<#52C25A>✔ <gray>| <white>Вы <#52C25A>успешно <white>создали клан <#FCD05C><hover:show_text:'<gray>Да да, он твой'>{clan}</hover>"
+  no-money: "<#C25252>✘ <gray>| <white>У вас <#C25252>недостаточно <white>монет для создания клана, нужно: <#52C25A>{cost}"
+  already-in-clan:
+    - ""
+    - " <#C25252>Ошибка! <white>Вы уже состоите в клане."
+    - " <gray>— <white>Сначала покиньте текущий клан"
+    - " <gray>— <white>чтобы создать новый"
+    - ""
+  invalid-length: "<#C25252>✘ <gray>| <white>Название должно быть от <#FCD05C>{min} <white>до <#FCD05C>{max} <white>символов"
+
+delete:
+  not-owner: "<#C25252>✘ <gray>| <white>Только <#C25252>владелец <white>может удалить клан"
+  deleted: "<#52C25A>✔ <gray>| <white>Клан <#FCD05C>{clan} <white>был успешно <#C25252>удален"
+
+invite:
+  usage:
+    - ""
+    - " <#C25252>Ошибка! <white>Нужно указать ник игрока"
+    - " <gray>— <#52C25A>/clan invite [ник]"
+    - ""
+  not-owner: "<#C25252>✘ <gray>| <white>Только <#C25252>лидер <white>может приглашать игроков в клан"
+  player-not-found: "<#C25252>✘ <gray>| <white>Игрок не найден или не в сети"
+  already-in-clan: "<#C25252>✘ <gray>| <white>Этот игрок уже состоит в клане"
+  invite-self: "<#C25252>✘ <gray>| <white>Вы не можете пригласить самого себя"
+  sent: "<#54C252>✔ <gray>| <white>Вы отправили приглашение игроку <#FCD05C>{player}"
+  full-owner:
+    - ""
+    - " <#C25252>✘ <gray>| <white>Клан достиг максимума участников:"
+    - "       <#FCD05C>{current}<gray>/<#FCD05C>{max}"
+    - " <gray>— <white>Чтобы пригласить больше игроков —"
+    - " <gray>— <white>повысьте уровень клана"
+    - ""
+
+  received:
+    - ""
+    - " <white>Вас пригласили в клан <#FCD05C>{clan}"
+    - " <white>У вас есть <#FCD05C>{time} сек. <white>чтобы принять его"
+    - "       <#54C252><click:run_command:/clan accept {clan}><hover:show_text:'<#54C252>Нажмите, чтобы вступить в клан'>[принять приглашение]</hover></click>"
+    - ""
+
+accept:
+  usage:
+    - ""
+    - " <#C25252>Ошибка! <white>Нужно указать название клана"
+    - " <gray>— <#52C25A>/clan accept [название]"
+    - ""
+  no-invite: "<#C25252>✘ <gray>| <white>У вас нет активного приглашения в этот клан"
+  success: "<#52C25A>✔ <gray>| <white>Вы успешно вступили в клан <#FCD05C>{clan}"
+  joined-notify: "<#52C25A>+ <gray>| <white>Игрок <#FCD05C>{player} <white>вступил в ваш клан"
+  clan-full:
+    - ""
+    - " <#C25252>✘ <gray>| <white>Клан <#FCD05C>{clan} <white>достиг максимума участников:"
+    - "       <#FCD05C>{current}<gray>/<#FCD05C>{max}"
+    - " <gray>— <white>Вступить сейчас невозможно"
+    - " <gray>— <white>Попросите лидера повысить уровень клана"
+    - ""
+
+kick:
+  usage:
+    - ""
+    - " <#C25252>Ошибка! <white>Нужно указать ник игрока"
+    - " <gray>— <#52C25A>/clan kick [ник]"
+    - ""
+  not-in-your-clan: "<#C25252>✘ <gray>| <white>Этот игрок не в вашем клане"
+  kick-self: "<#C25252>✘ <gray>| <white>Лидер не может кикнуть сам себя"
+  success: "<#52C25A>✔ <gray>| <white>Вы выгнали игрока <#FCD05C>{player} <white>из клана"
+  kicked-notify: "<#C25252>✘ <gray>| <white>Вас выгнали из клана <#FCD05C>{clan}"
+  not-owner: "<#C25252>✘ <gray>| <white>Только <#C25252>лидер <white>клана может кикать участников"
+
+leave:
+  is-owner:
+    - ""
+    - " <#C25252>Ошибка! <white>Вы являетесь лидером клана"
+    - " <gray>— <white>Вы не можете просто выйти"
+    - " <gray>— <white>Используйте <#C25252>/clan delete <white>для удаления"
+    - ""
+  success: "<#52C25A>✔ <gray>| <white>Вы покинули клан <#FCD05C>{clan}"
+  left-notify: "<#C25252>- <gray>| <white>Игрок <#FCD05C>{player} <white>покинул клан"
+
+# лиш утратив все до конца - мы обретаем свободу...
+setleader:
+  usage:
+    - ""
+    - " <#C25252>Ошибка! <white>Нужно указать ник игрока"
+    - " <gray>— <#52C25A>/clan setleader [ник]"
+    - ""
+  not-owner:
+    - ""
+    - " <#C25252>Ошибка! <white>Вы не являетесь лидером клана"
+    - " <gray>— <white>Передать права управления"
+    - " <gray>— <white>может только текущий владелец"
+    - ""
+  not-in-clan: "<#C25252>✘ <gray>| <white>Этого игрока нет в вашем клане"
+  self: "<#C25252>✘ <gray>| <white>Вы и так являетесь лидером"
+  success: "<#52C25A>✔ <gray>| <white>Вы передали лидерство игроку <#FCD05C>{player}"
+  new-leader-notify:
+    - ""
+    - " <#52C25A>★ <white>Теперь вы являетесь новым <#FCD05C>лидером <white>клана!"
+    - " <gray>— <white>Игрок <#FCD05C>{player} <white>передал вам свои права"
+    - ""
+
+clan-chat:
+  usage: "<#C25252>✘ <gray>| <white>Использование: <#52C25A>/clan chat [текст]"
+  no-clan: "<#C25252>✘ <gray>| <white>Вы <#C25252>не <white>состоите в клане"
+  empty-message: "<#C25252>✘ <gray>| <white>Сообщение <#C25252>не может <white>быть пустым"
+
+menu:
+  no-clan: "<#C25252>✘ <gray>| <white>У вас <#C25252>нет <white>клана"
+
+pvp:
+  no-clan: "<#C25252>✘ <gray>| <white>Вы <#C25252>не <white>состоите в клане"
+  not-owner: "<#C25252>✘ <gray>| <white>Только <#C25252>лидер <white>клана может менять настройку пвп"
+  enabled: "<#52C25A>✔ <gray>| <white>PvP в клане <#52C25A>включено"
+  disabled: "<#C25252>✘ <gray>| <white>PvP в клане <#C25252>выключено"
+
+balance:
+  no-clan: "<#C25252>✘ <gray>| <white>Вы <#C25252>не <white>состоите в клане"
+  info:
+    - ""
+    - " <#FCD05C>⚑ <gray>| <white>Казна клана <#FCD05C>{clan}"
+    - " <gray>— <white>Баланс: <#52C25A>{balance}"
+    - ""
+
+invest:
+  usage:
+    - ""
+    - " <#C25252>Ошибка! <white>Нужно указать сумму"
+    - " <gray>— <#52C25A>/clan invest [сумма]"
+    - ""
+  no-clan: "<#C25252>✘ <gray>| <white>Вы <#C25252>не <white>состоите в клане"
+  no-money: "<#C25252>✘ <gray>| <white>У вас <#C25252>недостаточно <white>монет, нужно: <#FCD05C>{amount}"
+  success: "<#52C25A>✔ <gray>| <white>Вы внесли <#FCD05C>{amount} <white>в казну клана. Баланс: <#52C25A>{balance}"
+
+withdraw:
+  usage:
+    - ""
+    - " <#C25252>Ошибка! <white>Нужно указать сумму"
+    - " <gray>— <#52C25A>/clan withdraw [сумма]"
+    - ""
+  no-clan: "<#C25252>✘ <gray>| <white>Вы <#C25252>не <white>состоите в клане"
+  not-owner: "<#C25252>✘ <gray>| <white>Только <#C25252>лидер <white>клана может выводить средства из казны"
+  not-enough: "<#C25252>✘ <gray>| <white>В казне <#C25252>недостаточно <white>средств. Доступно: <#FCD05C>{balance}"
+  success: "<#52C25A>✔ <gray>| <white>Вы вывели <#FCD05C>{amount} <white>из казны клана. Баланс: <#52C25A>{balance}"
+
+info:
+  no-clan: "<#C25252>✘ <gray>| <white>Вы <#C25252>не <white>состоите в клане"
+  # {clan_name} - название клана
+  # {clan_owner} - ник владельца
+  # {clan_level} - уровень клана
+  # {clan_exp} - текущий опыт
+  # {clan_exp_to_next} - опыта до следующего уровня
+  # {clan_members_current} - текущее кол-во участников
+  # {clan_members_max} - макс. колво участников
+  # {clan_members_info} - формат (текущее/макс)
+  # {members_online} - кол-во онлайн участников
+  # {clan_balance} - баланс клана
+  # {clan_pvp} - статус пвп
+  # {clan_members_list} - список всех участников
+  # {clan_members_online_list} - список только онлайн участников
+  content:
+    - ""
+    - "<#FACC15>★ <gray>| <white>Информация о клане <#FACC15>{clan_name}"
+    - ""
+    - "  <gray>- <white>Лидер: <#FACC15>{clan_owner}"
+    - "  <gray>- <white>Уровень: <#52C25A>{clan_level}"
+    - "  <gray>- <white>Опыт: <#52C25A>{clan_exp} <gray>(до след.: <#52C25A>{clan_exp_to_next}<gray>)"
+    - "  <gray>- <white>Участники: <#52C25A>{clan_members_info} <gray>(онлайн: <#52C25A>{members_online}<gray>)"
+    - "  <gray>- <white>Баланс: <#FACC15>{clan_balance}"
+    - "  <gray>- <white>PvP: {clan_pvp}"
+    - ""
+    - "  <gray>- <white>Все участники:"
+    - "    <#52C25A>{clan_members_list}"
+    - ""
+    - "  <gray>- <white>Сейчас онлайн:"
+    - "    <#52C25A>{clan_members_online_list}"
+    - ""
+
+glow:
+  no-clan: "<#C25252>✘ <gray>| <white>Вы <#C25252>не <white>состоите в клане"
+  not-owner: "<#C25252>✘ <gray>| <white>Только <#C25252>лидер <white>клана может управлять глоу"
+  enabled: "<#52C25A>✔ <gray>| <white>Свечение клана <#52C25A>включено"
+  disabled: "<#C25252>✘ <gray>| <white>Свечение клана <#C25252>выключено"
+  member-color-reset: "<#52C25A>✔ <gray>| <white>Цвет свечения игрока <#FCD05C>{player} <white>сброшен до общего цвета клана"
+
+perm:
+  no-clan: "<#C25252>✘ <gray>| <white>Вы <#C25252>не <white>состоите в клане"
+  not-leader: "<#C25252>✘ <gray>| <white>Только <#C25252>лидер <white>может управлять правами участников"
+  target-not-in-clan: "<#C25252>✘ <gray>| <white>Этот игрок <#C25252>не состоит <white>в вашем клане"
+  cannot-change-leader: "<#C25252>✘ <gray>| <white>Нельзя изменять права <#C25252>лидера <white>клана"
+  no-perm: "<#C25252>✘ <gray>| <white>У вас <#C25252>нет права <white>на это действие"

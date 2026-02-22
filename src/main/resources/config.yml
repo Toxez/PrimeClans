@@ -1,0 +1,32 @@
+language: ru # язык указывать без .yml
+settings:
+  min-name: 3 # минимальное количество символов для названия клана
+  max-name: 8 # это максимальное
+  invite-timeout: 60 # секунд
+  create-cost: 50000 # цена создания клана
+  cost-format: "%.0f" # формат отображения денег
+  clan-chat-format: "<#C25252>[Клан] {role} <#F3F3F3>{player}<gray>: <#C25252>{message}"
+  role:
+    owner: "<#F0DB46>Лидер"
+    member: "<gray>Участник"
+  player-status:
+    online: '<#62DE3F>Онлайн'
+    offline: '<#FF0000>Офлайн'
+  pvp-status:
+    enabled: "<#62DE3F>Включен"
+    disabled: "<#FF0000>Выключен"
+  members-separator: "<gray>, "
+  # Настройки базы данных
+  database:
+    type: sqlite # или mysql
+    mysql:
+      # Хост сервера
+      host: "localhost"
+      # Порт
+      port: 3306
+      # Имя базы данных
+      database: "primeclans"
+      # Имя пользователя
+      username: "root"
+      # Пароль пользователя
+      password: "your_password"
