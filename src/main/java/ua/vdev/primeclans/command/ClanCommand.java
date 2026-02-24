@@ -5,13 +5,16 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import ua.vdev.primeclans.api.command.ClanCommandRegistry;
 import ua.vdev.primeclans.command.sub.*;
 import ua.vdev.primeclans.manager.ClanManager;
 import ua.vdev.primeclans.util.Lang;
 import ua.vdev.vlibapi.player.PlayerFind;
+
 import java.util.*;
 
 public class ClanCommand implements CommandExecutor, TabCompleter {
+
     private final Map<String, SubCommand> subCommands = new HashMap<>();
     private final ClanManager clanManager;
 
@@ -36,50 +39,73 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
-        if (sender instanceof Player player) {
-            String subName = (args.length > 0) ? args[0].toLowerCase() : "";
-            boolean inClan = clanManager.getPlayerClan(player.getUniqueId()).isPresent();
-            if (subName.equals("create") && inClan) {
-                Lang.send(player, "create.already-in-clan");
-                return true;
-            }
+        if (!(sender instanceof Player player)) return true;
 
-            Optional.ofNullable(subCommands.get(subName))
-                    .ifPresentOrElse(
-                            sub -> sub.execute(player, args),
-                            () -> showHelp(player, inClan)
-                    );
+        String subName = (args.length > 0) ? args[0].toLowerCase() : "";
+        boolean inClan = clanManager.getPlayerClan(player.getUniqueId()).isPresent();
+
+        if (subName.equals("create") && inClan) {
+            Lang.send(player, "create.already-in-clan");
             return true;
         }
+
+        Optional.ofNullable(subCommands.get(subName))
+                .ifPresentOrElse(
+                        sub -> sub.execute(player, args),
+                        () -> {
+                            ClanCommandRegistry.get(subName)
+                                    .ifPresentOrElse(
+                                            addonSub -> addonSub.execute(player, args),
+                                            () -> showHelp(player, inClan)
+                                    );
+                        }
+                );
+
         return true;
     }
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, @NotNull String[] args) {
         if (!(sender instanceof Player player)) return Collections.emptyList();
+
         String input = args.length > 0 ? args[args.length - 1].toLowerCase() : "";
         boolean inClan = clanManager.getPlayerClan(player.getUniqueId()).isPresent();
+
         if (args.length == 1) {
             return getAvailableSubCommands(inClan, input);
         }
 
         if (args.length == 2) {
             String sub = args[0].toLowerCase();
-            return switch (sub) {
+
+            List<String> coreTab = switch (sub) {
                 case "invite" -> inClan ? suggestOnlinePlayers(player, input) : List.of();
                 case "kick", "setleader" -> inClan ? suggestClanMembers(player, input) : List.of();
                 case "accept" -> !inClan ? suggestClanNames(input) : List.of();
-                default -> List.of();
+                default -> null;
             };
+
+            if (coreTab != null) return coreTab;
+
+            return ClanCommandRegistry.get(sub)
+                    .map(addonSub -> addonSub.tabComplete(player, args))
+                    .orElse(List.of());
         }
 
         return Collections.emptyList();
     }
 
     private List<String> getAvailableSubCommands(boolean inClan, String input) {
-        Set<String> allowed = inClan
+        Set<String> allowed = new HashSet<>(inClan
                 ? Set.of("delete", "invite", "kick", "leave", "setleader", "chat", "menu", "pvp", "balance", "invest", "withdraw", "info", "glow")
-                : Set.of("create", "accept");
+                : Set.of("create", "accept")
+        );
+
+        ClanCommandRegistry.getAll().forEach((name, cmd) -> {
+            if (inClan && !cmd.requiresNoClan()) allowed.add(name);
+            if (!inClan && !cmd.requiresClan()) allowed.add(name);
+        });
+
         return allowed.stream()
                 .filter(name -> name.startsWith(input))
                 .sorted()

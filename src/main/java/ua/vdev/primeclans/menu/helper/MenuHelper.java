@@ -54,31 +54,77 @@ public class MenuHelper {
                 .map(actionStrings -> ActionFactory.create(actionStrings, context));
     }
 
-    public static void loadMenuItems(Inventory inventory, ConfigurationSection menuSection, Map<String, String> placeholders, Map<String, Object> actionContext, Map<Integer, List<MenuAction>> leftActions, Map<Integer, List<MenuAction>> rightActions) {
+    public static void loadMenuItems(
+            Inventory inventory,
+            ConfigurationSection menuSection,
+            Map<String, String> placeholders,
+            Map<String, Object> actionContext,
+            Map<Integer, List<MenuAction>> leftActions,
+            Map<Integer, List<MenuAction>> rightActions
+    ) {
         Optional.ofNullable(menuSection.getList("items", Collections.emptyList()))
                 .stream()
                 .flatMap(List::stream)
                 .filter(obj -> obj instanceof Map<?, ?>)
                 .map(obj -> (Map<?, ?>) obj)
                 .forEach(itemMap -> processMenuItem(
-                        inventory,
-                        itemMap,
-                        placeholders,
-                        actionContext,
-                        leftActions,
-                        rightActions
+                        inventory, itemMap, placeholders, actionContext, leftActions, rightActions
                 ));
     }
 
-    private static void processMenuItem(Inventory inventory, Map<?, ?> itemMap, Map<String, String> placeholders, Map<String, Object> actionContext, Map<Integer, List<MenuAction>> leftActions, Map<Integer, List<MenuAction>> rightActions) {
+    private static void processMenuItem(
+            Inventory inventory,
+            Map<?, ?> itemMap,
+            Map<String, String> placeholders,
+            Map<String, Object> actionContext,
+            Map<Integer, List<MenuAction>> leftActions,
+            Map<Integer, List<MenuAction>> rightActions
+    ) {
         Optional.ofNullable(ItemBuilder.fromMap(itemMap, placeholders))
                 .ifPresent(item -> {
                     Set<Integer> slots = parseSlots(itemMap, inventory.getSize());
                     slots.forEach(slot -> inventory.setItem(slot, item.clone()));
-                    parseActions(itemMap, "left_click_actions", actionContext)
+                    buildClickActions(itemMap, "left_click_actions", actionContext)
                             .ifPresent(actions -> slots.forEach(slot -> leftActions.put(slot, actions)));
-                    parseActions(itemMap, "right_click_actions", actionContext)
+
+                    buildClickActions(itemMap, "right_click_actions", actionContext)
                             .ifPresent(actions -> slots.forEach(slot -> rightActions.put(slot, actions)));
                 });
+    }
+
+    private static Optional<List<MenuAction>> buildClickActions(
+            Map<?, ?> itemMap,
+            String actionKey,
+            Map<String, Object> context
+    ) {
+        Optional<List<MenuAction>> rawActionsOpt = parseActions(itemMap, actionKey, context);
+
+        String reqKey = actionKey.equals("left_click_actions") ? "left_click" : "right_click";
+        Map<?, ?> reqMap = Optional.ofNullable(itemMap.get("requirements"))
+                .filter(Map.class::isInstance)
+                .map(o -> (Map<?, ?>) o)
+                .map(r -> Optional.ofNullable(r.get(reqKey))
+                        .filter(Map.class::isInstance)
+                        .map(o -> (Map<?, ?>) o)
+                        .orElse(null))
+                .orElse(null);
+
+        if (reqMap == null || !rawActionsOpt.isPresent()) {
+            return rawActionsOpt;
+        }
+
+        List<MenuAction> denyActions = Optional.ofNullable(reqMap.get("deny_actions"))
+                .filter(List.class::isInstance)
+                .map(o -> (List<?>) o)
+                .map(list -> list.stream()
+                        .filter(Objects::nonNull)
+                        .map(Object::toString)
+                        .toList())
+                .map(strings -> ActionFactory.create(strings, context))
+                .orElse(Collections.emptyList());
+
+        return ActionFactory.buildGuardedAction(reqMap, rawActionsOpt.get(), denyActions)
+                .map(guard -> List.of(guard))
+                .or(() -> rawActionsOpt);
     }
 }

@@ -1,9 +1,15 @@
 package ua.vdev.primeclans.menu.action;
 
+import ua.vdev.primeclans.api.action.ActionRegistry;
+import ua.vdev.primeclans.api.requirement.RequirementGuardAction;
+import ua.vdev.primeclans.api.requirement.RequirementGuardAction.Mode;
+import ua.vdev.primeclans.api.requirement.RequirementGuardAction.RequirementCheck;
+import ua.vdev.primeclans.api.requirement.RequirementRegistry;
 import ua.vdev.primeclans.menu.action.impl.*;
 import ua.vdev.primeclans.perm.ClanPerm;
 import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffectType;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,10 +27,63 @@ public class ActionFactory {
 
         return rawActions.stream()
                 .map(String::trim)
-                .map(raw -> ActionType.fromRaw(raw)
-                        .flatMap(type -> buildAction(type, raw, clanName, placeholders, targetUuidOpt)))
+                .map(raw -> {
+                    Optional<MenuAction> std = ActionType.fromRaw(raw)
+                            .flatMap(type -> buildAction(type, raw, clanName, placeholders, targetUuidOpt));
+                    if (std.isPresent()) return std;
+
+                    return ActionRegistry.findMatch(raw)
+                            .map(match -> {
+                                Map<String, Object> ctx = context;
+                                String arg = match.arg();
+                                String processedArg = replacePlaceholders(arg, placeholders);
+                                return (MenuAction) player -> match.action().execute(player, processedArg, ctx);
+                            });
+                })
                 .flatMap(Optional::stream)
                 .collect(Collectors.toList());
+    }
+
+    public static Optional<MenuAction> buildGuardedAction(
+            Map<?, ?> requirementsMap,
+            List<MenuAction> realActions,
+            List<MenuAction> denyActions
+    ) {
+        if (requirementsMap == null || requirementsMap.isEmpty()) return Optional.empty();
+
+        String modeStr = Optional.ofNullable(requirementsMap.get("mode"))
+                .map(Object::toString)
+                .orElse("ALL");
+        Mode mode = "ANY".equalsIgnoreCase(modeStr) ? Mode.ANY : Mode.ALL;
+
+        List<?> conditionsList = Optional.ofNullable(requirementsMap.get("conditions"))
+                .filter(List.class::isInstance)
+                .map(o -> (List<?>) o)
+                .orElse(Collections.emptyList());
+
+        List<RequirementCheck> checks = conditionsList.stream()
+                .filter(obj -> obj instanceof Map<?, ?>)
+                .map(obj -> (Map<?, ?>) obj)
+                .flatMap(condMap -> {
+                    String type = Optional.ofNullable(condMap.get("type"))
+                            .map(Object::toString)
+                            .orElse("");
+                    String lookupType = "CUSTOM".equalsIgnoreCase(type)
+                            ? Optional.ofNullable(condMap.get("id")).map(Object::toString).orElse("")
+                            : type;
+                    return RequirementRegistry.get(lookupType)
+                            .map(req -> {
+                                Map<String, Object> params = new HashMap<>();
+                                condMap.forEach((k, v) -> params.put(k.toString(), v));
+                                return new RequirementCheck(req, params);
+                            })
+                            .stream();
+                })
+                .toList();
+
+        if (checks.isEmpty()) return Optional.empty();
+
+        return Optional.of(new RequirementGuardAction(checks, mode, realActions, denyActions));
     }
 
     private static Optional<MenuAction> buildAction(ActionType type, String raw, String clanName, Map<String, String> placeholders, Optional<UUID> targetUuidOpt) {

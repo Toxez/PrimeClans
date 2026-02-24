@@ -2,6 +2,7 @@ package ua.vdev.primeclans.menu.action.impl;
 
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.PrimeClans;
+import ua.vdev.primeclans.api.menu.MenuRegistry;
 import ua.vdev.primeclans.menu.Menu;
 import ua.vdev.primeclans.menu.MenuManager;
 import ua.vdev.primeclans.menu.action.MenuAction;
@@ -31,7 +32,8 @@ public class OpenMenu implements MenuAction {
 
     private Optional<Menu> createMenuById(Player player, String id) {
         String lower = id.toLowerCase();
-        return switch (lower) {
+
+        Optional<Menu> coreMenu = switch (lower) {
             case "main-menu" -> PrimeClans.getInstance().getClanManager()
                     .getPlayerClan(player.getUniqueId())
                     .map(MainMenu::new);
@@ -46,5 +48,11 @@ public class OpenMenu implements MenuAction {
                     .map(PlayerGlowList::new);
             default -> Optional.empty();
         };
+
+        if (coreMenu.isPresent()) return coreMenu;
+
+        return PrimeClans.getInstance().getClanManager()
+                .getPlayerClan(player.getUniqueId())
+                .flatMap(clan -> MenuRegistry.create(lower, clan));
     }
 }

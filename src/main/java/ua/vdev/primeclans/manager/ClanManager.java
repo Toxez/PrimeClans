@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.api.ClanProvider;
+import ua.vdev.primeclans.api.event.ClanEventBus;
 import ua.vdev.primeclans.database.Db;
 import ua.vdev.primeclans.glow.GlowColor;
 import ua.vdev.primeclans.glow.manager.GlowManager;
@@ -13,6 +14,7 @@ import ua.vdev.primeclans.model.Clan;
 import ua.vdev.primeclans.perm.ClanPerm;
 import ua.vdev.vlibapi.player.PlayerFind;
 import ua.vdev.vlibapi.util.scheduler.Task;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +39,6 @@ public class ClanManager implements ClanProvider {
                 Clan fixed = calculated != clan.level()
                         ? clan.withExp(clan.exp(), calculated)
                         : clan;
-
                 if (!fixed.equals(clan)) db.saveClan(fixed);
                 clans.put(lowerName, fixed);
                 fixed.members().forEach(m -> {
@@ -71,7 +72,6 @@ public class ClanManager implements ClanProvider {
             invites.forEach((uuid, clanMap) ->
                     clanMap.entrySet().removeIf(e -> now - e.getValue() > expireMs)
             );
-
             invites.entrySet().removeIf(e -> e.getValue().isEmpty());
         });
     }
@@ -127,7 +127,6 @@ public class ClanManager implements ClanProvider {
                 updated = clan.withMemberPerm(targetUuid, perm);
                 db.addMemberPerm(targetUuid, perm);
             }
-
             clans.put(clanName.toLowerCase(), updated);
             return !hadPerm;
         });
@@ -141,11 +140,13 @@ public class ClanManager implements ClanProvider {
         playerToClan.put(owner, name);
         db.saveClan(clan);
         PlayerFind.uuid(owner).ifPresent(GlowManager::enable);
+        ClanEventBus.fireCreate(clan);
     }
 
     public void deleteClan(String name) {
         String lower = name.toLowerCase();
         Optional.ofNullable(clans.remove(lower)).ifPresent(clan -> {
+            ClanEventBus.fireDelete(clan);
             dirtyClanSchedule.remove(lower);
             List<Player> onlineMembers = clan.members().stream()
                     .map(PlayerFind::uuid)
@@ -172,12 +173,14 @@ public class ClanManager implements ClanProvider {
             playerToClan.put(player, clan.name());
             db.addMember(clan.name(), player);
             PlayerFind.uuid(player).ifPresent(GlowManager::enable);
+            ClanEventBus.fireJoin(updated, player);
         });
         invites.remove(player);
     }
 
     public void removeMember(String clanName, UUID player) {
         getClan(clanName).ifPresent(clan -> {
+            ClanEventBus.fireLeave(clan, player);
             List<Player> viewers = clan.members().stream()
                     .filter(m -> !m.equals(player))
                     .map(PlayerFind::uuid)
@@ -187,7 +190,6 @@ public class ClanManager implements ClanProvider {
             PlayerFind.uuid(player).ifPresent(removed ->
                     GlowUpdater.sendRealEquipment(removed, viewers)
             );
-
             Set<UUID> newMembers = new HashSet<>(clan.members());
             newMembers.remove(player);
             Clan updated = clan.withMembers(newMembers)
@@ -246,7 +248,9 @@ public class ClanManager implements ClanProvider {
             Clan updated = clan.withExp(newExp, newLevel);
             clans.put(clan.name().toLowerCase(), updated);
             scheduleSave(updated);
+            ClanEventBus.fireExpGain(updated, amount);
             if (newLevel > oldLevel) {
+                ClanEventBus.fireLevelUp(updated, oldLevel, newLevel);
                 PrimeClans.getInstance().getLevelService().handleLevelUp(updated, oldLevel);
             }
         });
@@ -257,6 +261,7 @@ public class ClanManager implements ClanProvider {
             Clan updated = clan.withPvp(enabled);
             clans.put(clanName.toLowerCase(), updated);
             db.saveClan(updated);
+            ClanEventBus.firePvpToggle(updated, enabled);
         });
     }
 
@@ -267,9 +272,11 @@ public class ClanManager implements ClanProvider {
     public void deposit(String clanName, double amount) {
         if (amount <= 0) return;
         getClan(clanName).ifPresent(clan -> {
-            Clan updated = clan.withBalance(clan.balance() + amount);
+            double oldBalance = clan.balance();
+            Clan updated = clan.withBalance(oldBalance + amount);
             clans.put(clanName.toLowerCase(), updated);
             db.saveClan(updated);
+            ClanEventBus.fireBalanceChange(updated, oldBalance, updated.balance());
         });
     }
 
@@ -277,16 +284,17 @@ public class ClanManager implements ClanProvider {
         if (amount <= 0) return Optional.of(false);
         return getClan(clanName).map(clan -> {
             if (clan.balance() < amount) return false;
-            Clan updated = clan.withBalance(clan.balance() - amount);
+            double oldBalance = clan.balance();
+            Clan updated = clan.withBalance(oldBalance - amount);
             clans.put(clanName.toLowerCase(), updated);
             db.saveClan(updated);
+            ClanEventBus.fireBalanceChange(updated, oldBalance, updated.balance());
             return true;
         });
     }
 
     public boolean hasActiveInvite(UUID target, String clanName) {
-        int timeout = PrimeClans.getInstance().getConfig()
-                .getInt("settings.invite-timeout", 60);
+        int timeout = PrimeClans.getInstance().getConfig().getInt("settings.invite-timeout", 60);
         long now = System.currentTimeMillis();
         return Optional.ofNullable(invites.get(target))
                 .map(m -> m.get(clanName.toLowerCase()))

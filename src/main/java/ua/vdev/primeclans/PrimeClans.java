@@ -9,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import ua.vdev.primeclans.addon.AddonLoader;
 import ua.vdev.primeclans.api.ClanProvider;
 import ua.vdev.primeclans.command.ClanCommand;
 import ua.vdev.primeclans.database.Db;
@@ -28,7 +29,9 @@ import ua.vdev.primeclans.util.Papi;
 import ua.vdev.vlibapi.util.Registrar;
 import ua.vdev.vlibapi.util.lang.Translation;
 import ua.vdev.vlibapi.util.LogUtil;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,6 +42,7 @@ public final class PrimeClans extends JavaPlugin {
     @Getter private ClanManager clanManager;
     @Getter private EconomyManager economyManager;
     @Getter private ClanLevelService levelService;
+    @Getter private AddonLoader addonLoader;
     private Db database;
     private Economy econ;
     private LogUtil log;
@@ -59,6 +63,7 @@ public final class PrimeClans extends JavaPlugin {
         String language = getConfig().getString("language", "ua");
         translation = new Translation(this);
         translation.load(language, supportedLangs);
+
         createMenuDirectory();
         initDatabase();
         if (!setupEconomy()) {
@@ -71,20 +76,20 @@ public final class PrimeClans extends JavaPlugin {
         clanManager.load();
         clanManager.startSaveTask();
         clanManager.startInviteCleanupTask();
+
         if (Bukkit.getPluginManager().getPlugin("packetevents") != null) {
-            PacketEvents.getAPI().getEventManager().registerListener(
-                    new GlowPacketListener(clanManager),
-                    PacketListenerPriority.NORMAL
-            );
+            PacketEvents.getAPI().getEventManager().registerListener(new GlowPacketListener(clanManager), PacketListenerPriority.NORMAL);
             Registrar.events(this, new GlowBukkitListener(clanManager));
         } else {
             log.warn("Для глоу нужен PacketEvents");
         }
 
         getServer().getServicesManager().register(ClanProvider.class, clanManager, this, ServicePriority.Normal);
+
         ClanCommand clanCmd = new ClanCommand(clanManager);
         getCommand("clan").setExecutor(clanCmd);
         getCommand("clan").setTabCompleter(clanCmd);
+
         Registrar.events(this,
                 new PvpListener(clanManager),
                 new MenuListener(),
@@ -95,11 +100,21 @@ public final class PrimeClans extends JavaPlugin {
             new Papi().register();
         }
 
+        addonLoader = new AddonLoader(getDataFolder());
+        addonLoader.findAndLoad();
+        addonLoader.enableAll();
         log.info("Плагин запущен");
     }
 
     @Override
     public void onDisable() {
+        if (addonLoader != null) {
+            try {
+                addonLoader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         if (database != null) database.close();
     }
 
