@@ -13,6 +13,8 @@ import ua.vdev.primeclans.api.requirement.AddonRequirement;
 import ua.vdev.primeclans.api.requirement.RequirementRegistry;
 import ua.vdev.primeclans.menu.Menu;
 import ua.vdev.primeclans.model.Clan;
+import ua.vdev.primeclans.perm.ClanPermEntry;
+import ua.vdev.primeclans.perm.ClanPermRegistry;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -38,6 +40,68 @@ import java.util.function.Function;
 public final class AddonAPI {
 
     private AddonAPI() {}
+
+    /**
+     * Регистрирует новое право клана из аддона
+     *
+     * <p>После регистрации право появится в меню {@code player-perm} как
+     * плейсхолдеры {@code {perm_<configKey>_material}},
+     * {@code {perm_<configKey>_status}}, {@code {perm_<configKey>_display}}.
+     *
+     * <p>Пример
+     * <pre>{@code
+     * AddonAPI.registerPerm(ClanPermEntry.of("HOME_SET", "home_set", "<green>Установка дома"));
+     * }</pre>
+     *
+     * <p>Затем в player-perm.yml:
+     * <pre>
+     * - slot: 20
+     *   material: "{perm_home_set_material}"
+     *   name: "<white>Установка дома"
+     *   lore:
+     *     - "Статус: {perm_home_set_status}"
+     *   left_click_actions:
+     *     - "[toggle-perm] HOME_SET"
+     * </pre>
+     *
+     * @param entry метаданные права
+     */
+    public static void registerPerm(ClanPermEntry entry) {
+        ClanPermRegistry.register(entry);
+    }
+
+    /**
+     * Регистрирует право клана с указанием ключа, configKey и отображаемого имени.
+     *
+     * @param key уникальный ключ права в верхнем регистре (например {@code "HOME_SET"})
+     * @param configKey короткий ключ для ямл-плейсхолдеров (например {@code "home_set"})
+     * @param displayName отображаемое имя
+     * @param description описание права
+     */
+    public static void registerPerm(String key, String configKey, String displayName, String description) {
+        ClanPermRegistry.register(ClanPermEntry.of(key, configKey, displayName, description));
+    }
+
+    /**
+     * Регистрирует право без описания
+     *
+     * @param key ключ права
+     * @param configKey ямл-ключ
+     * @param displayName отображаемое имя
+     */
+    public static void registerPerm(String key, String configKey, String displayName) {
+        registerPerm(key, configKey, displayName, "");
+    }
+
+    /**
+     * Отменяет регистрацию права аддона
+     * Встроенные права {@code ClanPerm} удалить нельзя
+     *
+     * @param key ключ права
+     */
+    public static void unregisterPerm(String key) {
+        ClanPermRegistry.unregister(key);
+    }
 
     /**
      * Регистрирует кастомное действие для использования в конфигах меню

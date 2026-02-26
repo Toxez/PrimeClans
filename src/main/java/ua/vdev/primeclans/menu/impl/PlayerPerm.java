@@ -15,9 +15,8 @@ import ua.vdev.primeclans.menu.action.MenuAction;
 import ua.vdev.primeclans.menu.config.MenuConfig;
 import ua.vdev.primeclans.menu.helper.MenuHelper;
 import ua.vdev.primeclans.model.Clan;
-import ua.vdev.primeclans.perm.ClanPerm;
+import ua.vdev.primeclans.perm.ClanPermRegistry;
 import ua.vdev.vlibapi.util.TextColor;
-
 import java.util.*;
 
 public class PlayerPerm implements Menu {
@@ -27,17 +26,6 @@ public class PlayerPerm implements Menu {
     private final MenuConfig menuConfig;
     private final Map<Integer, List<MenuAction>> leftActions  = new HashMap<>();
     private final Map<Integer, List<MenuAction>> rightActions = new HashMap<>();
-
-    private static final Map<ClanPerm, String> PERM_KEYS = Map.of(
-            ClanPerm.KICK_MEMBERS,"kick",
-            ClanPerm.INVITE_MEMBERS,"invite",
-            ClanPerm.CLAN_CHAT,"chat",
-            ClanPerm.INVEST_BALANCE,"invest",
-            ClanPerm.WITHDRAW_BALANCE,"withdraw",
-            ClanPerm.TOGGLE_PVP,"pvp",
-            ClanPerm.MANAGE_GLOW,"glow",
-            ClanPerm.MANAGE_MEMBER_GLOW,"member_glow"
-    );
 
     public PlayerPerm(Clan clan, UUID targetUuid) {
         this.clan = clan;
@@ -58,14 +46,14 @@ public class PlayerPerm implements Menu {
                     "target_uuid", targetUuid.toString(),
                     "placeholders", placeholders
             );
-
             MenuHelper.loadMenuItems(inventory, menuSection, placeholders, actionContext, leftActions, rightActions);
             player.openInventory(inventory);
         });
     }
 
     private Inventory createInventory(ConfigurationSection menuSection, Map<String, String> placeholders) {
-        String title = Optional.ofNullable(menuSection.getString("title")).orElse("Права {player_name}");
+        String title = Optional.ofNullable(menuSection.getString("title"))
+                .orElse("Права {player_name}");
         int size = menuSection.getInt("size", 54);
         return Bukkit.createInventory(new MenuHolder(getId()), size, TextColor.parse(title, placeholders));
     }
@@ -74,29 +62,31 @@ public class PlayerPerm implements Menu {
         String rawEnabledMat = menuSection.getString("perm-states.enabled.material", "GREEN_STAINED_GLASS_PANE");
         String rawDisabledMat = menuSection.getString("perm-states.disabled.material", "RED_STAINED_GLASS_PANE");
         String rawEnabledStatus = menuSection.getString("perm-states.enabled.status", "<#52C25A>✔ Разрешено");
-        String rawDisabledStatus= menuSection.getString("perm-states.disabled.status", "<#C25252>✘ Запрещено");
+        String rawDisabledStatus = menuSection.getString("perm-states.disabled.status", "<#C25252>✘ Запрещено");
 
-        final String matOn = isValidMaterial(rawEnabledMat) ? rawEnabledMat : "GREEN_STAINED_GLASS_PANE";
+        final String matOn  = isValidMaterial(rawEnabledMat)  ? rawEnabledMat  : "GREEN_STAINED_GLASS_PANE";
         final String matOff = isValidMaterial(rawDisabledMat) ? rawDisabledMat : "RED_STAINED_GLASS_PANE";
-        final String statusOn = rawEnabledStatus;
-        final String statusOff = rawDisabledStatus;
 
-        Set<ClanPerm> currentPerms = Optional.ofNullable(clan.memberPerms().get(targetUuid))
+        Set<String> currentPerms = Optional.ofNullable(clan.memberPerms().get(targetUuid))
                 .orElse(Collections.emptySet());
+
         String playerName = Optional.of(targetUuid)
                 .map(Bukkit::getOfflinePlayer)
                 .map(OfflinePlayer::getName)
-                .orElse("Unknown");
+                .orElse("Хз");
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("player_name", playerName);
         placeholders.put("player_uuid", targetUuid.toString());
-        placeholders.put("clan_name",   clan.name());
+        placeholders.put("clan_name", clan.name());
 
-        PERM_KEYS.forEach((perm, key) -> {
-            boolean has = currentPerms.contains(perm);
-            placeholders.put("perm_" + key + "_material", has ? matOn : matOff);
-            placeholders.put("perm_" + key + "_status", has ? statusOn : statusOff);
+        ClanPermRegistry.getAll().forEach((permKey, entry) -> {
+            boolean has = currentPerms.contains(permKey);
+            String  key = entry.configKey();
+
+            placeholders.put("perm_" + key + "_material", has ? matOn  : matOff);
+            placeholders.put("perm_" + key + "_status", has ? rawEnabledStatus : rawDisabledStatus);
+            placeholders.put("perm_" + key + "_display", entry.displayName());
         });
 
         return Collections.unmodifiableMap(placeholders);

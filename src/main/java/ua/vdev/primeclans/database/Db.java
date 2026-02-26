@@ -16,8 +16,10 @@ public interface Db {
     void removeMember(UUID uuid);
     void setMemberGlowColor(UUID uuid, GlowColor color);
     void removeMemberGlowColor(UUID uuid);
-    void addMemberPerm(UUID uuid, ClanPerm perm);
-    void removeMemberPerm(UUID uuid, ClanPerm perm);
+    void addMemberPerm(UUID uuid, String permKey);
+    void removeMemberPerm(UUID uuid, String permKey);
     void removeMemberPerms(UUID uuid);
+    default void addMemberPerm(UUID uuid, ClanPerm perm) {addMemberPerm(uuid, perm.name());}
+    default void removeMemberPerm(UUID uuid, ClanPerm perm) {removeMemberPerm(uuid, perm.name());}
     void close();
 }

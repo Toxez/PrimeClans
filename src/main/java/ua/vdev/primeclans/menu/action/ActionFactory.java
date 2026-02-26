@@ -6,7 +6,6 @@ import ua.vdev.primeclans.api.requirement.RequirementGuardAction.Mode;
 import ua.vdev.primeclans.api.requirement.RequirementGuardAction.RequirementCheck;
 import ua.vdev.primeclans.api.requirement.RequirementRegistry;
 import ua.vdev.primeclans.menu.action.impl.*;
-import ua.vdev.primeclans.perm.ClanPerm;
 import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffectType;
 
@@ -34,10 +33,9 @@ public class ActionFactory {
 
                     return ActionRegistry.findMatch(raw)
                             .map(match -> {
-                                Map<String, Object> ctx = context;
-                                String arg = match.arg();
-                                String processedArg = replacePlaceholders(arg, placeholders);
-                                return (MenuAction) player -> match.action().execute(player, processedArg, ctx);
+                                String processedArg = replacePlaceholders(match.arg(), placeholders);
+                                return (MenuAction) player ->
+                                        match.action().execute(player, processedArg, context);
                             });
                 })
                 .flatMap(Optional::stream)
@@ -82,11 +80,13 @@ public class ActionFactory {
                 .toList();
 
         if (checks.isEmpty()) return Optional.empty();
-
         return Optional.of(new RequirementGuardAction(checks, mode, realActions, denyActions));
     }
 
-    private static Optional<MenuAction> buildAction(ActionType type, String raw, String clanName, Map<String, String> placeholders, Optional<UUID> targetUuidOpt) {
+    private static Optional<MenuAction> buildAction(
+            ActionType type, String raw, String clanName,
+            Map<String, String> placeholders, Optional<UUID> targetUuidOpt
+    ) {
         String arg = raw.substring(type.getPrefix().length()).trim();
         String processedArg = replacePlaceholders(arg, placeholders);
 
@@ -107,7 +107,9 @@ public class ActionFactory {
             case SET_GLOW_COLOR -> Optional.of(new SetGlowColor(processedArg));
             case SET_MEMBER_GLOW_COLOR -> targetUuidOpt.map(uuid -> new SetMemberGlowColor(uuid, processedArg));
             case RESET_MEMBER_GLOW_COLOR -> targetUuidOpt.map(ResetMemberGlowColor::new);
-            case TOGGLE_PERM -> targetUuidOpt.flatMap(uuid -> ClanPerm.of(processedArg).map(perm -> new TogglePerm(uuid, perm)));
+            case TOGGLE_PERM -> targetUuidOpt
+                    .filter(uuid -> !processedArg.isBlank())
+                    .map(uuid -> new TogglePerm(uuid, processedArg));
         };
     }
 
@@ -117,7 +119,7 @@ public class ActionFactory {
             if (parts.length >= 3) {
                 Sound sound = Sound.valueOf(parts[0].trim().toUpperCase());
                 float volume = Float.parseFloat(parts[1].trim());
-                float pitch  = Float.parseFloat(parts[2].trim());
+                float pitch = Float.parseFloat(parts[2].trim());
                 return Optional.of(new PlaySound(sound, volume, pitch));
             }
         } catch (Exception ignored) {}
@@ -128,7 +130,7 @@ public class ActionFactory {
         try {
             String[] parts = arg.split(";");
             if (parts.length >= 2) {
-                String title    = parts[0].trim();
+                String title = parts[0].trim();
                 String subtitle = parts.length > 1 ? parts[1].trim() : "";
                 int fadeIn = parts.length > 2 ? Integer.parseInt(parts[2].trim()) : 10;
                 int stay = parts.length > 3 ? Integer.parseInt(parts[3].trim()) : 70;

@@ -3,7 +3,6 @@ package ua.vdev.primeclans.model;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.glow.GlowColor;
 import ua.vdev.primeclans.perm.ClanPerm;
-
 import java.util.*;
 
 public record Clan(
@@ -16,7 +15,7 @@ public record Clan(
         double balance,
         GlowColor glowColor,
         Map<UUID, GlowColor> memberColors,
-        Map<UUID, Set<ClanPerm>> memberPerms
+        Map<UUID, Set<String>> memberPerms
 ) {
 
     public Clan {
@@ -34,37 +33,48 @@ public record Clan(
                 glowColor, Collections.emptyMap(), Collections.emptyMap());
     }
 
-    public boolean hasPerm(UUID uuid, ClanPerm perm) {
+    public boolean hasPerm(UUID uuid, String permKey) {
         if (isOwner(uuid)) return true;
         return Optional.ofNullable(memberPerms.get(uuid))
-                .map(perms -> perms.contains(perm))
+                .map(perms -> perms.contains(permKey.toUpperCase()))
                 .orElse(false);
     }
 
-    public Clan withMemberPerm(UUID uuid, ClanPerm perm) {
-        Map<UUID, Set<ClanPerm>> updated = deepCopyPerms(memberPerms);
-        updated.computeIfAbsent(uuid, k -> new HashSet<>()).add(perm);
+    public boolean hasPerm(UUID uuid, ClanPerm perm) {
+        return hasPerm(uuid, perm.name());
+    }
+
+    public Clan withMemberPerm(UUID uuid, String permKey) {
+        Map<UUID, Set<String>> updated = deepCopyPerms(memberPerms);
+        updated.computeIfAbsent(uuid, k -> new HashSet<>()).add(permKey.toUpperCase());
         return new Clan(name, owner, members, level, exp, pvpEnabled,
                 balance, glowColor, memberColors, updated);
     }
 
-    public Clan withoutMemberPerm(UUID uuid, ClanPerm perm) {
-        Map<UUID, Set<ClanPerm>> updated = deepCopyPerms(memberPerms);
+    public Clan withMemberPerm(UUID uuid, ClanPerm perm) {
+        return withMemberPerm(uuid, perm.name());
+    }
+
+    public Clan withoutMemberPerm(UUID uuid, String permKey) {
+        Map<UUID, Set<String>> updated = deepCopyPerms(memberPerms);
         Optional.ofNullable(updated.get(uuid)).ifPresent(perms -> {
-            perms.remove(perm);
+            perms.remove(permKey.toUpperCase());
             if (perms.isEmpty()) updated.remove(uuid);
         });
         return new Clan(name, owner, members, level, exp, pvpEnabled,
                 balance, glowColor, memberColors, updated);
     }
 
+    public Clan withoutMemberPerm(UUID uuid, ClanPerm perm) {
+        return withoutMemberPerm(uuid, perm.name());
+    }
+
     public Clan withoutAllMemberPerms(UUID uuid) {
-        Map<UUID, Set<ClanPerm>> updated = deepCopyPerms(memberPerms);
+        Map<UUID, Set<String>> updated = deepCopyPerms(memberPerms);
         updated.remove(uuid);
         return new Clan(name, owner, members, level, exp, pvpEnabled,
                 balance, glowColor, memberColors, updated);
     }
-
 
     public GlowColor effectiveColorFor(UUID uuid) {
         return Optional.ofNullable(memberColors.get(uuid)).orElse(glowColor);
@@ -120,8 +130,8 @@ public record Clan(
         return PrimeClans.getInstance().getLevelService().maxMembersForLevel(level);
     }
 
-    private static Map<UUID, Set<ClanPerm>> deepCopyPerms(Map<UUID, Set<ClanPerm>> source) {
-        Map<UUID, Set<ClanPerm>> copy = new HashMap<>();
+    private static Map<UUID, Set<String>> deepCopyPerms(Map<UUID, Set<String>> source) {
+        Map<UUID, Set<String>> copy = new HashMap<>();
         source.forEach((uuid, perms) -> copy.put(uuid, new HashSet<>(perms)));
         return copy;
     }

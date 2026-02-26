@@ -65,8 +65,7 @@ public class ClanManager implements ClanProvider {
 
     public void startInviteCleanupTask() {
         Task.timer(20L * 60L, 20L * 60L, () -> {
-            int timeout = PrimeClans.getInstance().getConfig()
-                    .getInt("settings.invite-timeout", 60);
+            int timeout = PrimeClans.getInstance().getConfig().getInt("settings.invite-timeout", 60);
             long now = System.currentTimeMillis();
             long expireMs = timeout * 1000L;
             invites.forEach((uuid, clanMap) ->
@@ -105,31 +104,41 @@ public class ClanManager implements ClanProvider {
         return clans.containsKey(name.toLowerCase());
     }
 
-    public boolean hasPerm(UUID uuid, ClanPerm perm) {
+    public boolean hasPerm(UUID uuid, String permKey) {
         return getPlayerClan(uuid)
-                .map(clan -> clan.hasPerm(uuid, perm))
+                .map(clan -> clan.hasPerm(uuid, permKey))
                 .orElse(false);
     }
 
-    public Optional<Boolean> toggleMemberPerm(String clanName, UUID targetUuid, ClanPerm perm) {
+    public boolean hasPerm(UUID uuid, ClanPerm perm) {
+        return hasPerm(uuid, perm.name());
+    }
+
+    public Optional<Boolean> toggleMemberPerm(String clanName, UUID targetUuid, String permKey) {
+        String upper = permKey.toUpperCase();
         return getClan(clanName).map(clan -> {
             if (!clan.members().contains(targetUuid)) return null;
             if (clan.isOwner(targetUuid)) return null;
+
             boolean hadPerm = Optional.ofNullable(clan.memberPerms().get(targetUuid))
-                    .map(perms -> perms.contains(perm))
+                    .map(perms -> perms.contains(upper))
                     .orElse(false);
 
             Clan updated;
             if (hadPerm) {
-                updated = clan.withoutMemberPerm(targetUuid, perm);
-                db.removeMemberPerm(targetUuid, perm);
+                updated = clan.withoutMemberPerm(targetUuid, upper);
+                db.removeMemberPerm(targetUuid, upper);
             } else {
-                updated = clan.withMemberPerm(targetUuid, perm);
-                db.addMemberPerm(targetUuid, perm);
+                updated = clan.withMemberPerm(targetUuid, upper);
+                db.addMemberPerm(targetUuid, upper);
             }
             clans.put(clanName.toLowerCase(), updated);
             return !hadPerm;
         });
+    }
+
+    public Optional<Boolean> toggleMemberPerm(String clanName, UUID targetUuid, ClanPerm perm) {
+        return toggleMemberPerm(clanName, targetUuid, perm.name());
     }
 
     public void createClan(String name, UUID owner) {
@@ -243,8 +252,8 @@ public class ClanManager implements ClanProvider {
         if (amount <= 0) return;
         getPlayerClan(playerUuid).ifPresent(clan -> {
             long newExp = clan.exp() + amount;
-            int oldLevel = clan.level();
-            int newLevel = PrimeClans.getInstance().getLevelService().calculateLevel(newExp);
+            int  oldLevel = clan.level();
+            int  newLevel = PrimeClans.getInstance().getLevelService().calculateLevel(newExp);
             Clan updated = clan.withExp(newExp, newLevel);
             clans.put(clan.name().toLowerCase(), updated);
             scheduleSave(updated);
@@ -294,7 +303,7 @@ public class ClanManager implements ClanProvider {
     }
 
     public boolean hasActiveInvite(UUID target, String clanName) {
-        int timeout = PrimeClans.getInstance().getConfig().getInt("settings.invite-timeout", 60);
+        int  timeout = PrimeClans.getInstance().getConfig().getInt("settings.invite-timeout", 60);
         long now = System.currentTimeMillis();
         return Optional.ofNullable(invites.get(target))
                 .map(m -> m.get(clanName.toLowerCase()))

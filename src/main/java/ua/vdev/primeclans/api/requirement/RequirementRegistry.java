@@ -1,7 +1,6 @@
 package ua.vdev.primeclans.api.requirement;
 
 import ua.vdev.primeclans.PrimeClans;
-import ua.vdev.primeclans.perm.ClanPerm;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,8 +35,7 @@ public class RequirementRegistry {
             return player.getLevel() >= min;
         });
 
-        register("IN_CLAN", (player, clan, params) -> clan != null);
-
+        register("IN_CLAN",     (player, clan, params) -> clan != null);
         register("NOT_IN_CLAN", (player, clan, params) -> clan == null);
 
         register("IS_OWNER", (player, clan, params) -> {
@@ -47,18 +45,17 @@ public class RequirementRegistry {
 
         register("CLAN_MEMBERS", (player, clan, params) -> {
             if (clan == null) return false;
-            int min = getInt(params, "min", 0);
-            int max = getInt(params, "max", Integer.MAX_VALUE);
+            int min  = getInt(params, "min", 0);
+            int max  = getInt(params, "max", Integer.MAX_VALUE);
             int size = clan.members().size();
             return size >= min && size <= max;
         });
 
         register("HAS_PERM", (player, clan, params) -> {
             if (clan == null) return false;
-            String permName = getString(params, "perm", "");
-            return ClanPerm.of(permName)
-                    .map(perm -> clan.hasPerm(player.getUniqueId(), perm))
-                    .orElse(false);
+            String permKey = getString(params, "perm", "");
+            if (permKey.isBlank()) return false;
+            return clan.hasPerm(player.getUniqueId(), permKey);
         });
     }
 

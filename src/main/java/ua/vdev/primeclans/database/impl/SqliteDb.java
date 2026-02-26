@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.glow.GlowColor;
 import ua.vdev.primeclans.model.Clan;
-import ua.vdev.primeclans.perm.ClanPerm;
 import ua.vdev.vlibapi.util.scheduler.Task;
 
 import java.io.File;
@@ -25,7 +24,6 @@ public class SqliteDb extends SqlDb {
         config.setPoolName("PrimeClans-Pool");
         config.setMaximumPoolSize(1);
         this.ds = new HikariDataSource(config);
-
         createTables(
                 "FOREIGN KEY(clan_name) REFERENCES clans(name) ON DELETE CASCADE",
                 "COLLATE NOCASE"
@@ -37,14 +35,17 @@ public class SqliteDb extends SqlDb {
         Task.async(() -> {
             try (Connection c = ds.getConnection();
                  PreparedStatement ps = c.prepareStatement(
-                         "INSERT OR REPLACE INTO clans (name, owner, level, exp, pvp_enabled, balance, glow_color) " + "VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+                         "INSERT OR REPLACE INTO clans " +
+                                 "(name, owner, level, exp, pvp_enabled, balance, glow_color) " +
+                                 "VALUES (?, ?, ?, ?, ?, ?, ?)")) {
                 ps.setString(1, clan.name());
                 ps.setString(2, clan.owner().toString());
                 ps.setInt(3, clan.level());
                 ps.setLong(4, clan.exp());
                 ps.setInt(5, clan.pvpEnabled() ? 1 : 0);
                 ps.setDouble(6, clan.balance());
-                ps.setString(7, Optional.ofNullable(clan.glowColor()).map(GlowColor::toHex).orElse(null));
+                ps.setString(7, Optional.ofNullable(clan.glowColor())
+                        .map(GlowColor::toHex).orElse(null));
                 ps.executeUpdate();
                 addMember(clan.name(), clan.owner());
             } catch (SQLException e) {
@@ -82,12 +83,12 @@ public class SqliteDb extends SqlDb {
     }
 
     @Override
-    public void addMemberPerm(UUID uuid, ClanPerm perm) {
+    public void addMemberPerm(UUID uuid, String permKey) {
         Task.async(() -> {
             try (Connection c = ds.getConnection();
                  PreparedStatement ps = c.prepareStatement("INSERT OR IGNORE INTO member_perms (uuid, perm) VALUES (?, ?)")) {
                 ps.setString(1, uuid.toString());
-                ps.setString(2, perm.name());
+                ps.setString(2, permKey.toUpperCase());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();

@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import ua.vdev.primeclans.database.DbCreds;
 import ua.vdev.primeclans.glow.GlowColor;
 import ua.vdev.primeclans.model.Clan;
-import ua.vdev.primeclans.perm.ClanPerm;
 import ua.vdev.vlibapi.util.scheduler.Task;
 
 import java.sql.Connection;
@@ -48,7 +47,8 @@ public class MysqlDb extends SqlDb {
                 ps.setLong(4, clan.exp());
                 ps.setInt(5, clan.pvpEnabled() ? 1 : 0);
                 ps.setDouble(6, clan.balance());
-                ps.setString(7, Optional.ofNullable(clan.glowColor()).map(GlowColor::toHex).orElse(null));
+                ps.setString(7, Optional.ofNullable(clan.glowColor())
+                        .map(GlowColor::toHex).orElse(null));
                 ps.executeUpdate();
                 addMember(clan.name(), clan.owner());
             } catch (SQLException e) {
@@ -90,12 +90,12 @@ public class MysqlDb extends SqlDb {
     }
 
     @Override
-    public void addMemberPerm(UUID uuid, ClanPerm perm) {
+    public void addMemberPerm(UUID uuid, String permKey) {
         Task.async(() -> {
             try (Connection c = ds.getConnection();
                  PreparedStatement ps = c.prepareStatement("INSERT IGNORE INTO member_perms (uuid, perm) VALUES (?, ?)")) {
                 ps.setString(1, uuid.toString());
-                ps.setString(2, perm.name());
+                ps.setString(2, permKey.toUpperCase());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
