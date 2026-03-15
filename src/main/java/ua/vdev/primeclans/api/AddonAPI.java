@@ -9,8 +9,8 @@ import ua.vdev.primeclans.api.event.ClanEventBus;
 import ua.vdev.primeclans.api.menu.MenuRegistry;
 import ua.vdev.primeclans.api.placeholder.ClanPlaceholder;
 import ua.vdev.primeclans.api.placeholder.PlaceholderRegistry;
-import ua.vdev.primeclans.api.requirement.AddonRequirement;
-import ua.vdev.primeclans.api.requirement.RequirementRegistry;
+import ua.vdev.primeclans.api.variable.ContextVariable;
+import ua.vdev.primeclans.api.variable.VariableRegistry;
 import ua.vdev.primeclans.menu.Menu;
 import ua.vdev.primeclans.model.Clan;
 import ua.vdev.primeclans.perm.ClanPermEntry;
@@ -208,16 +208,17 @@ public final class AddonAPI {
     }
 
     /**
-     * Регистрирует кастомное требование для системы {@code requirements} в конфигах меню
+     * Регистрирует кастомную локальную переменную для использования в условиях (if).
      *
-     * <p>Тип указывается в ямл как {@code type: MY_TYPE} (регистронезависимо)
+     * <p>Имя переменной указывается в конфиге меню напрямую, например:
+     * {@code condition: "my_variable >= 10"}
      *
-     * @param type строковый тип требования (будет приведён к верхнему регистру)
-     * @param requirement реализация проверки
-     * @see AddonRequirement
+     * @param name имя переменной (в нижнем регистре)
+     * @param variable реализация переменной
+     * @see ContextVariable
      */
-    public static void registerRequirement(String type, AddonRequirement requirement) {
-        RequirementRegistry.register(type, requirement);
+    public static void registerVariable(String name, ContextVariable variable) {
+        VariableRegistry.register(name, variable);
     }
 
     /**

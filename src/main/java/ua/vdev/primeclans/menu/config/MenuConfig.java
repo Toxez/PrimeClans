@@ -3,7 +3,6 @@ package ua.vdev.primeclans.menu.config;
 import org.bukkit.configuration.file.YamlConfiguration;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.menu.MenuType;
-
 import java.io.File;
 import java.io.IOException;
 

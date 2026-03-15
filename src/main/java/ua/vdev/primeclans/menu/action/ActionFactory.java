@@ -1,21 +1,17 @@
 package ua.vdev.primeclans.menu.action;
 
 import ua.vdev.primeclans.api.action.ActionRegistry;
-import ua.vdev.primeclans.api.requirement.RequirementGuardAction;
-import ua.vdev.primeclans.api.requirement.RequirementGuardAction.Mode;
-import ua.vdev.primeclans.api.requirement.RequirementGuardAction.RequirementCheck;
-import ua.vdev.primeclans.api.requirement.RequirementRegistry;
 import ua.vdev.primeclans.menu.action.impl.*;
 import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ActionFactory {
 
-    public static List<MenuAction> create(List<String> rawActions, Map<String, Object> context) {
+    public static List<MenuAction> create(List<?> rawActions, Map<String, Object> context) {
         if (rawActions == null || rawActions.isEmpty()) return Collections.emptyList();
+
         String clanName = getContextValue(context, "clan_name", String.class).orElse(null);
         Map<String, String> placeholders = getSafePlaceholders(context);
         Optional<UUID> targetUuidOpt = getContextValue(context, "target_uuid", String.class)
@@ -24,63 +20,59 @@ public class ActionFactory {
                     catch (IllegalArgumentException e) { return Optional.empty(); }
                 });
 
-        return rawActions.stream()
-                .map(String::trim)
-                .map(raw -> {
-                    Optional<MenuAction> std = ActionType.fromRaw(raw)
-                            .flatMap(type -> buildAction(type, raw, clanName, placeholders, targetUuidOpt));
-                    if (std.isPresent()) return std;
+        List<MenuAction> parsedActions = new ArrayList<>();
 
-                    return ActionRegistry.findMatch(raw)
-                            .map(match -> {
-                                String processedArg = replacePlaceholders(match.arg(), placeholders);
-                                return (MenuAction) player ->
-                                        match.action().execute(player, processedArg, context);
-                            });
-                })
-                .flatMap(Optional::stream)
-                .collect(Collectors.toList());
+        for (Object rawObj : rawActions) {
+            if (rawObj instanceof String rawStr) {
+                parseSingleStringAction(rawStr, clanName, placeholders, targetUuidOpt, context)
+                        .ifPresent(parsedActions::add);
+            } else if (rawObj instanceof Map<?, ?> map) {
+                if (map.containsKey("if")) {
+                    parsedActions.add(parseIfAction(map, context));
+                }
+            }
+        }
+
+        return parsedActions;
     }
 
-    public static Optional<MenuAction> buildGuardedAction(
-            Map<?, ?> requirementsMap,
-            List<MenuAction> realActions,
-            List<MenuAction> denyActions
-    ) {
-        if (requirementsMap == null || requirementsMap.isEmpty()) return Optional.empty();
+    private static MenuAction parseIfAction(Map<?, ?> map, Map<String, Object> context) {
+        Object ifBlockObj = map.get("if");
+        String condition = "false";
 
-        String modeStr = Optional.ofNullable(requirementsMap.get("mode"))
-                .map(Object::toString)
-                .orElse("ALL");
-        Mode mode = "ANY".equalsIgnoreCase(modeStr) ? Mode.ANY : Mode.ALL;
+        if (ifBlockObj instanceof Map<?, ?> ifBlock) {
+            condition = Optional.ofNullable(ifBlock.get("condition")).map(Object::toString).orElse("false");
+        }
 
-        List<?> conditionsList = Optional.ofNullable(requirementsMap.get("conditions"))
-                .filter(List.class::isInstance)
-                .map(o -> (List<?>) o)
-                .orElse(Collections.emptyList());
+        List<MenuAction> thenActions = create(getListFromMap(map, "then"), context);
+        List<MenuAction> elseActions = create(getListFromMap(map, "else"), context);
 
-        List<RequirementCheck> checks = conditionsList.stream()
-                .filter(obj -> obj instanceof Map<?, ?>)
-                .map(obj -> (Map<?, ?>) obj)
-                .flatMap(condMap -> {
-                    String type = Optional.ofNullable(condMap.get("type"))
-                            .map(Object::toString)
-                            .orElse("");
-                    String lookupType = "CUSTOM".equalsIgnoreCase(type)
-                            ? Optional.ofNullable(condMap.get("id")).map(Object::toString).orElse("")
-                            : type;
-                    return RequirementRegistry.get(lookupType)
-                            .map(req -> {
-                                Map<String, Object> params = new HashMap<>();
-                                condMap.forEach((k, v) -> params.put(k.toString(), v));
-                                return new RequirementCheck(req, params);
-                            })
-                            .stream();
-                })
-                .toList();
+        return new IfAction(condition, thenActions, elseActions);
+    }
 
-        if (checks.isEmpty()) return Optional.empty();
-        return Optional.of(new RequirementGuardAction(checks, mode, realActions, denyActions));
+    private static List<?> getListFromMap(Map<?, ?> map, String key) {
+        Object obj = map.get(key);
+        if (obj instanceof List<?>) {
+            return (List<?>) obj;
+        }
+        return Collections.emptyList();
+    }
+
+    private static Optional<MenuAction> parseSingleStringAction(
+            String raw, String clanName, Map<String, String> placeholders,
+            Optional<UUID> targetUuidOpt, Map<String, Object> context) {
+
+        String trimmed = raw.trim();
+        Optional<MenuAction> std = ActionType.fromRaw(trimmed)
+                .flatMap(type -> buildAction(type, trimmed, clanName, placeholders, targetUuidOpt));
+
+        if (std.isPresent()) return std;
+
+        return ActionRegistry.findMatch(trimmed)
+                .map(match -> {
+                    String processedArg = replacePlaceholders(match.arg(), placeholders);
+                    return (MenuAction) player -> match.action().execute(player, processedArg, context);
+                });
     }
 
     private static Optional<MenuAction> buildAction(
