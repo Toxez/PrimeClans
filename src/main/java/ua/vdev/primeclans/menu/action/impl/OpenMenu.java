@@ -10,6 +10,7 @@ import ua.vdev.primeclans.menu.impl.GlowMenu;
 import ua.vdev.primeclans.menu.impl.MainMenu;
 import ua.vdev.primeclans.menu.impl.PlayerGlowList;
 import ua.vdev.primeclans.menu.impl.PlayerList;
+import ua.vdev.primeclans.perm.ClanPerm;
 import ua.vdev.vlibapi.player.PlayerMsg;
 
 import java.util.Optional;
@@ -23,6 +24,17 @@ public class OpenMenu implements MenuAction {
 
     @Override
     public void execute(Player player) {
+        if (menuId.equalsIgnoreCase("storage")) {
+            PrimeClans.getInstance().getClanManager().getPlayerClan(player.getUniqueId()).ifPresentOrElse(clan -> {
+                if (!clan.hasPerm(player.getUniqueId(), ClanPerm.valueOf("STORAGE_ACCESS"))) {
+                    ua.vdev.primeclans.util.Lang.send(player, "storage.no-perm");
+                    return;
+                }
+                PrimeClans.getInstance().getStorageManager().openStorage(player, clan);
+            }, () -> ua.vdev.primeclans.util.Lang.send(player, "storage.no-clan"));
+            return;
+        }
+
         createMenuById(player, menuId)
                 .ifPresentOrElse(
                         menu -> MenuManager.openMenu(player, menu),

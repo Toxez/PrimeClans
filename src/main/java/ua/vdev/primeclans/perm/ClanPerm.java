@@ -10,7 +10,8 @@ public enum ClanPerm {
     INVEST_BALANCE,
     WITHDRAW_BALANCE,
     CLAN_CHAT,
-    TOGGLE_PVP;
+    TOGGLE_PVP,
+    STORAGE_ACCESS;
 
     public static Optional<ClanPerm> of(String name) {
         if (name == null || name.isBlank()) return Optional.empty();

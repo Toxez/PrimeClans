@@ -35,6 +35,7 @@ public final class ClanPermRegistry {
         register(ClanPermEntry.of("TOGGLE_PVP","pvp","<red>ПВП переключение","Право включать/выключать клановое ПВП"));
         register(ClanPermEntry.of("MANAGE_GLOW","glow","<aqua>Управление свечением","Право управлять свечением клана"));
         register(ClanPermEntry.of("MANAGE_MEMBER_GLOW","member_glow","<aqua>Свечение участников","Право менять цвет свечения участников"));
+        register(ClanPermEntry.of("STORAGE_ACCESS","storage","<gold>Хранилище","Право на доступ к хранилищу клана"));
     }
 
     private ClanPermRegistry() {}

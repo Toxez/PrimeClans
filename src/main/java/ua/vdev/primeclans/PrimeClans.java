@@ -25,6 +25,8 @@ import ua.vdev.primeclans.listener.PvpListener;
 import ua.vdev.primeclans.manager.ClanManager;
 import ua.vdev.primeclans.menu.MenuListener;
 import ua.vdev.primeclans.menu.MenuType;
+import ua.vdev.primeclans.storage.StorageManager;
+import ua.vdev.primeclans.storage.listener.StorageListener;
 import ua.vdev.primeclans.util.Papi;
 import ua.vdev.vlibapi.util.Registrar;
 import ua.vdev.vlibapi.util.lang.Translation;
@@ -42,24 +44,18 @@ public final class PrimeClans extends JavaPlugin {
     @Getter private ClanManager clanManager;
     @Getter private EconomyManager economyManager;
     @Getter private ClanLevelService levelService;
+    @Getter private StorageManager storageManager;
     @Getter private AddonLoader addonLoader;
     private Db database;
     private Economy econ;
     private LogUtil log;
-
-    //@Override
-    //public void onLoad() {
-        //if (Bukkit.getPluginManager().getPlugin("packetevents") != null) {
-            //PacketEvents.getAPI().getEventManager().registerListener(new GlowPacketListener(new ClanManager(database)), PacketListenerPriority.NORMAL);
-        //}
-    //}
 
     @Override
     public void onEnable() {
         instance = this;
         log = LogUtil.of(this);
         saveDefaultConfig();
-        List<String> supportedLangs = List.of("ru", "en", "ua");
+        List<String> supportedLangs = List.of("ru", "en", "ua", "fr", "by", "es");
         String language = getConfig().getString("language", "ua");
         translation = new Translation(this);
         translation.load(language, supportedLangs);
@@ -72,7 +68,10 @@ public final class PrimeClans extends JavaPlugin {
         }
 
         levelService = new ClanLevelService();
+
         clanManager = new ClanManager(database);
+        storageManager = new StorageManager(database);
+
         clanManager.load();
         clanManager.startSaveTask();
         clanManager.startInviteCleanupTask();
@@ -86,14 +85,15 @@ public final class PrimeClans extends JavaPlugin {
 
         getServer().getServicesManager().register(ClanProvider.class, clanManager, this, ServicePriority.Normal);
 
-        ClanCommand clanCmd = new ClanCommand(clanManager);
+        ClanCommand clanCmd = new ClanCommand(clanManager, storageManager);
         getCommand("clan").setExecutor(clanCmd);
         getCommand("clan").setTabCompleter(clanCmd);
 
         Registrar.events(this,
                 new PvpListener(clanManager),
                 new MenuListener(),
-                new ClanExpListener(clanManager, levelService)
+                new ClanExpListener(clanManager, levelService),
+                new StorageListener(storageManager)
         );
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -115,6 +115,11 @@ public final class PrimeClans extends JavaPlugin {
                 e.printStackTrace();
             }
         }
+
+        if (storageManager != null) {
+            storageManager.forceSaveAll();
+        }
+
         if (database != null) database.close();
     }
 
