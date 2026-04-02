@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import ua.vdev.primeclans.api.command.ClanCommandRegistry;
 import ua.vdev.primeclans.command.sub.*;
 import ua.vdev.primeclans.manager.ClanManager;
+import ua.vdev.primeclans.storage.StorageManager;
 import ua.vdev.primeclans.util.Lang;
 import ua.vdev.vlibapi.player.PlayerFind;
 
@@ -18,7 +19,8 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     private final Map<String, SubCommand> subCommands = new HashMap<>();
     private final ClanManager clanManager;
 
-    public ClanCommand(ClanManager clanManager) {
+    // Передаем StorageManager в конструктор
+    public ClanCommand(ClanManager clanManager, StorageManager storageManager) {
         this.clanManager = clanManager;
         subCommands.put("create", new CreateSub(clanManager));
         subCommands.put("delete", new DeleteSub(clanManager));
@@ -35,6 +37,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         subCommands.put("withdraw", new WithdrawSub(clanManager));
         subCommands.put("info", new InfoSub(clanManager));
         subCommands.put("glow", new GlowSub(clanManager));
+        subCommands.put("storage", new StorageSub(clanManager, storageManager));
     }
 
     @Override
@@ -97,7 +100,7 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
 
     private List<String> getAvailableSubCommands(boolean inClan, String input) {
         Set<String> allowed = new HashSet<>(inClan
-                ? Set.of("delete", "invite", "kick", "leave", "setleader", "chat", "menu", "pvp", "balance", "invest", "withdraw", "info", "glow")
+                ? Set.of("delete", "invite", "kick", "leave", "setleader", "chat", "menu", "pvp", "balance", "invest", "withdraw", "info", "glow", "storage")
                 : Set.of("create", "accept")
         );
 

@@ -19,8 +19,15 @@ public class ClanLevelService {
         this.config = new LevelsConfig();
     }
 
-    public void reload() {
-        config.reload();
+    //public void reload() {
+        //config.reload();
+    //}
+
+    public int storageSlotsForLevel(int level) {
+        return Optional.ofNullable(config.levels().floorEntry(level))
+                .map(Map.Entry::getValue)
+                .map(ClanLevel::storageSlots)
+                .orElse(config.getDefaultStorageSlots());
     }
 
     public long expFor(String source) {
@@ -31,7 +38,7 @@ public class ClanLevelService {
         return Optional.ofNullable(config.levels().floorEntry(level))
                 .map(Map.Entry::getValue)
                 .map(ClanLevel::maxMembers)
-                .orElse(config.defaultMaxMembers());
+                .orElse(config.getDefaultMaxMembers());
     }
 
     public int calculateLevel(long exp) {
@@ -59,25 +66,19 @@ public class ClanLevelService {
 
     public void handleLevelUp(Clan clan, int oldLevel) {
         int newLevel = clan.level();
-
         Map<String, String> placeholders = Map.of(
                 "clan", clan.name(),
                 "level", String.valueOf(newLevel),
                 "max_members", String.valueOf(clan.getMaxMembers())
         );
-
         for (int lvl = oldLevel + 1; lvl <= newLevel; lvl++) {
             levelUpFor(lvl).ifPresent(levelUp -> {
                 clan.members().stream()
                         .map(PlayerFind::uuid)
                         .flatMap(Optional::stream)
                         .forEach(member -> {
-                            levelUp.messages().forEach(msg ->
-                                    PlayerMsg.send(member, msg, placeholders)
-                            );
-                            levelUp.sound().ifPresent(s ->
-                                    member.playSound(member.getLocation(), s.sound(), s.volume(), s.pitch())
-                            );
+                            levelUp.messages().forEach(msg -> PlayerMsg.send(member, msg, placeholders));
+                            levelUp.sound().ifPresent(s -> member.playSound(member.getLocation(), s.sound(), s.volume(), s.pitch()));
                         });
             });
         }

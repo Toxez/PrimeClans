@@ -21,5 +21,8 @@ public interface Db {
     void removeMemberPerms(UUID uuid);
     default void addMemberPerm(UUID uuid, ClanPerm perm) {addMemberPerm(uuid, perm.name());}
     default void removeMemberPerm(UUID uuid, ClanPerm perm) {removeMemberPerm(uuid, perm.name());}
+    CompletableFuture<String> loadStorage(String clanName);
+    void saveStorage(String clanName, String base64);
+
     void close();
 }

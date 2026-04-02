@@ -43,6 +43,11 @@ public abstract class SqlDb implements Db {
                     "perm VARCHAR(64) NOT NULL, " +
                     "PRIMARY KEY (uuid, perm))");
 
+            s.execute("CREATE TABLE IF NOT EXISTS clan_storage (" +
+                    "clan_name VARCHAR(16) PRIMARY KEY " + ignoreCaseSql + ", " +
+                    "items LONGTEXT NOT NULL, " +
+                    foreignKeySql + ")");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -196,6 +201,36 @@ public abstract class SqlDb implements Db {
                  PreparedStatement ps = c.prepareStatement(
                          "DELETE FROM member_perms WHERE uuid = ?")) {
                 ps.setString(1, uuid.toString());
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<String> loadStorage(String clanName) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (Connection c = ds.getConnection();
+                 PreparedStatement ps = c.prepareStatement("SELECT items FROM clan_storage WHERE clan_name = ?")) {
+                ps.setString(1, clanName);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) return rs.getString("items");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return "";
+        });
+    }
+
+    @Override
+    public void saveStorage(String clanName, String base64) {
+        Task.async(() -> {
+            try (Connection c = ds.getConnection();
+                 PreparedStatement ps = c.prepareStatement(
+                         "REPLACE INTO clan_storage (clan_name, items) VALUES (?, ?)")) {
+                ps.setString(1, clanName);
+                ps.setString(2, base64);
                 ps.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();

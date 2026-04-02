@@ -1,5 +1,6 @@
 package ua.vdev.primeclans.level.config;
 
+import lombok.Getter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.level.model.ClanLevel;
@@ -9,11 +10,13 @@ import ua.vdev.primeclans.level.model.PlaySoundData;
 import java.io.File;
 import java.util.*;
 
+@Getter
 public class LevelsConfig {
 
     private final YamlConfiguration config;
     private final Map<String, Long> expSources = new HashMap<>();
     private int defaultMaxMembers = 5;
+    private int defaultStorageSlots = 9;
     private final NavigableMap<Integer, ClanLevel> levels = new TreeMap<>();
 
     public LevelsConfig() {
@@ -29,39 +32,37 @@ public class LevelsConfig {
     public void reload() {
         expSources.clear();
         Optional.ofNullable(config.getConfigurationSection("exp"))
-                .ifPresent(sec -> sec.getKeys(false).forEach(key ->
-                        expSources.put(key, sec.getLong(key))
-                ));
+                .ifPresent(sec -> sec.getKeys(false).forEach(key -> expSources.put(key, sec.getLong(key))));
 
         defaultMaxMembers = config.getInt("default-max-members", 5);
+        defaultStorageSlots = config.getInt("default-storage-slots", 9);
 
         levels.clear();
         List<Map<?, ?>> mapList = config.getMapList("clan-levels");
         for (Map<?, ?> map : mapList) {
             int level = getInt(map, "level", 1);
             int maxMembers = getInt(map, "max-members", defaultMaxMembers);
+            int storageSlots = getInt(map, "storage-slots", defaultStorageSlots);
             long requiredExp = getLong(map, "required-exp", 0L);
             LevelUp levelUp = parseLevelUp(map);
 
-            levels.put(level, new ClanLevel(level, maxMembers, requiredExp, levelUp));
+            levels.put(level, new ClanLevel(level, maxMembers, storageSlots, requiredExp, levelUp));
         }
 
-        levels.putIfAbsent(1, new ClanLevel(1, defaultMaxMembers, 0L, new LevelUp(Optional.empty(), List.of())));
+        levels.putIfAbsent(1, new ClanLevel(1, defaultMaxMembers, defaultStorageSlots, 0L, new LevelUp(Optional.empty(), List.of())));
     }
 
     private LevelUp parseLevelUp(Map<?, ?> map) {
         Optional<PlaySoundData> sound = Optional.ofNullable((String) map.get("sound"))
                 .flatMap(this::parseSound);
-
-        Object msgObj = map.get("message");
         List<String> messages = new ArrayList<>();
 
+        Object msgObj = map.get("message");
         if (msgObj instanceof List<?> list) {
             for (Object o : list) {
                 if (o != null) messages.add(o.toString());
             }
         }
-
         return new LevelUp(sound, messages);
     }
 
@@ -92,10 +93,6 @@ public class LevelsConfig {
 
     public Map<String, Long> expSources() {
         return Collections.unmodifiableMap(expSources);
-    }
-
-    public int defaultMaxMembers() {
-        return defaultMaxMembers;
     }
 
     public NavigableMap<Integer, ClanLevel> levels() {
