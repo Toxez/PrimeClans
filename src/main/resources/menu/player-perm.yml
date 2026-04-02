@@ -19,6 +19,8 @@
 # {perm_glow_status} - статус MANAGE_GLOW
 # {perm_member_glow_material} - материал кнопки MANAGE_MEMBER_GLOW
 # {perm_member_glow_status} - статус MANAGE_MEMBER_GLOW
+# {perm_storage_material} - материал кнопки STORAGE_ACCESS
+# {perm_storage_status} - статус STORAGE_ACCESS
 #
 # Права:
 # KICK_MEMBERS - кикать учасников
@@ -29,6 +31,7 @@
 # TOGGLE_PVP - переключать пвп в клане
 # MANAGE_GLOW - переключать глоу клана
 # MANAGE_MEMBER_GLOW - глоу для отдельных учасников
+# STORAGE_ACCESS - доступ к хранилищю клана
 #
 # Акшионы:
 # [toggle-perm] - переключать определенное право игроку
@@ -183,7 +186,7 @@ menu:
         - "[sound] UI_BUTTON_CLICK;0.7;1.2"
 
     - material: "{perm_member_glow_material}"
-      slot: 31
+      slot: 30
       name: "<#C252C2>🎨 <gray>| <white>Цвет глоу участников"
       lore:
         - ""
@@ -197,6 +200,23 @@ menu:
         - "[sound] UI_BUTTON_CLICK;0.7;1.2"
       right_click_actions:
         - "[toggle-perm] MANAGE_MEMBER_GLOW"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+
+    - material: "{perm_storage_material}"
+      slot: 32
+      name: "<#FCD05C>📦 <gray>| <white>Доступ к хранилищу"
+      lore:
+        - ""
+        - " <gray>— <white>Позволяет открывать"
+        - " <gray>   <white>и использовать хранилище клана"
+        - ""
+        - " <gray>— <white>Статус: {perm_storage_status}"
+        - ""
+      left_click_actions:
+        - "[toggle-perm] STORAGE_ACCESS"
+        - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+      right_click_actions:
+        - "[toggle-perm] STORAGE_ACCESS"
         - "[sound] UI_BUTTON_CLICK;0.7;1.2"
 
     - material: ARROW

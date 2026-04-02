@@ -220,3 +220,7 @@ perm:
   target-not-in-clan: "<#C25252>✘ <gray>| <white>This player <#C25252>is not <white>in your clan"
   cannot-change-leader: "<#C25252>✘ <gray>| <white>You cannot change the rights of the <#C25252>clan leader"
   no-perm: "<#C25252>✘ <gray>| <white>You <#C25252>do not have permission <white>for this action"
+
+storage:
+  no-clan: "<#C25252>✘ <gray>| <white>You are <#C25252>not <white>in a clan"
+  no-perm: "<#C25252>✘ <gray>| <white>You do <#C25252>not have permission <white>for this action"

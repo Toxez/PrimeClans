@@ -1,4 +1,47 @@
-# Действия:
+#
+# Проверки
+#
+# Вы можете создавать цепочки действий с помощью условий (if - then - else)
+# Поддерживается математика вложенные проверки и PlaceholderAPI
+#
+# для чайников
+# if - если
+# then - тогда
+# else - иначе
+#
+# пример:
+# - if:
+#     condition: "условие"
+#   then:
+#     - "[действие] если условие ВЕРНО"
+#   else:
+#     - "[действие] если условие НЕВЕРНО"
+#
+# проверки от клана:
+# in_clan - Состоит ли в клане (true/false)
+# is_owner - Лидер ли это (true/false)
+# clan_balance - Баланс кланы (число)
+# clan_level - Уровень клана (число)
+# clan_exp - Опыт клана (число)
+# clan_members_count - Количество участников (число)
+#
+# проверка прав клана:
+# condition: "has_clan_perm == ИМЯ_ПРАВА" (например: has_clan_perm == MANAGE_GLOW)
+#
+# операторы сравнения:
+# == (равно)
+# != (не равно)
+# >= (больше или равно)
+# <= (меньше или равно)
+# > (больше)
+# < (меньше)
+#
+# примеры:
+# condition: "is_owner == true" - проверка на лидера
+# condition: "clan_balance >= 5000" - проверка баланса казны
+# condition: "%playerpoints_points% >= 100" - проверка донат валюты через PAPI
+#
+# действия:
 # [player] - выполняет команду от имени игрока
 # [console] - выполняет команду от консоли ( {player} и {uuid} )
 # [title] заголовок;подзаголовок;fadeIn;stay;fadeOut - показывает тайтл и субтайтл игроку (время в тиках)
@@ -9,11 +52,11 @@
 # [open_menu] - открывает меню
 # [message] - отправить сообщение игроку
 #
-# Клики:
+# клики:
 # left_click_actions: - левый клик
 # right_click_actions: - правый клик
 #
-# Плейсхолдеры:
+# плейсхолдеры:
 # {clan_name} - название клана
 # {clan_owner} - никнейм лидера клана
 # {clan_level} - текущий уровень клана
@@ -26,9 +69,21 @@
 # {clan_balance} - показывает скольок монет в казне клана
 #
 menu:
-  title: "&0Клан {clan_name}"
-  size: 27
+  title: "<black>Клан {clan_name}"
+  size: 45
   items:
+    - material: BLACK_STAINED_GLASS_PANE
+      slots: [0, 1, 2, 6, 7, 8, 17, 27, 36, 37, 38, 42, 43, 44]
+      name: " "
+
+    - material: CYAN_STAINED_GLASS_PANE
+      slots: [3, 4, 5, 39, 40, 41]
+      name: " "
+
+    - material: CHAIN
+      slots: [9, 18, 26, 35]
+      name: " "
+
     - material: BELL
       slot: 13
       name: "<#DC332E>♯ <gray>| <white>Информация о клане"
@@ -44,11 +99,65 @@ menu:
         - ""
       left_click_actions:
         - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+        # пример 1 проверки
+        - if:
+            condition: "is_owner == true"
+          then:
+            # если нужно 2 проверка
+            - if:
+                condition: "%statistic_hours_played% >= 10"
+              then:
+                #
+                - if:
+                    condition: "%player_level% >= 30"
+                  then:
+                    - "[message] <green>типо секреи для теста новых проверок"
+                    - "[sound] ENTITY_PLAYER_LEVELUP;1.0;1.5"
+                    - "[close]"
+                  else:
+                    - "[message] <yellow>нету 30 уровня"
+                    - "[sound] ENTITY_VILLAGER_TRADE;1.0;1.0"
+              #
+              else:
+                - "[actionbar] <red>нету времени 10ч;60"
+                - "[sound] ENTITY_VILLAGER_NO;1.0;1.0"
+
+          else:
+            # Если вообще не лидер ну по 1 проверке
+            - "[message] <gray>нет"
+            - "[sound] BLOCK_ANVIL_PLACE;1.0;0.5"
       right_click_actions:
         - "[sound] UI_BUTTON_CLICK;0.7;1.2"
+        # пример 1 проверки
+        - if:
+            condition: "is_owner == true"
+          then:
+            # если нужно 2 проверка
+            - if:
+                condition: "%statistic_hours_played% >= 10"
+              then:
+                #
+                - if:
+                    condition: "%player_level% >= 30"
+                  then:
+                    - "[message] <green>типо секреи для теста новых проверок"
+                    - "[sound] ENTITY_PLAYER_LEVELUP;1.0;1.5"
+                    - "[close]"
+                  else:
+                    - "[message] <yellow>нету 30 уровня"
+                    - "[sound] ENTITY_VILLAGER_TRADE;1.0;1.0"
+              #
+              else:
+                - "[actionbar] <red>нету времени;60"
+                - "[sound] ENTITY_VILLAGER_NO;1.0;1.0"
+          #
+          else:
+            # Если вообще не лидер ну по 1 проверке
+            - "[message] <gray>нет"
+            - "[sound] BLOCK_ANVIL_PLACE;1.0;0.5"
 
     - material: CAMPFIRE
-      slot: 15
+      slot: 24
       name: "<#F83A66>🧪 <gray>| <white>Участники клана"
       lore:
         - ""
@@ -63,7 +172,7 @@ menu:
         - "[sound] BOOK_PAGE_TURN;1.0;1.0"
 
     - material: AMETHYST_SHARD
-      slot: 11
+      slot: 20
       name: "<#5FBCF1>⌛ <gray>| <white>Настройка свечения"
       lore:
         - ""
@@ -75,3 +184,17 @@ menu:
       right_click_actions:
         - "[open_menu] glow"
         - "[sound] BOOK_PAGE_TURN;1.0;1.0"
+    - material: BARREL
+      slot: 22
+      name: "<#F4B41A>⚑ <gray>| <white>Клановое хранилище"
+      lore:
+        - ""
+        - " <white>Открыть <#F4B41A>общее хранилище"
+        - " <white>твоего клана"
+        - ""
+      left_click_actions:
+        - "[open_menu] storage"
+        - "[sound] BLOCK_ENDER_CHEST_OPEN;1.0;1.0"
+      right_click_actions:
+        - "[open_menu] storage"
+        - "[sound] BLOCK_ENDER_CHEST_OPEN;1.0;1.0"

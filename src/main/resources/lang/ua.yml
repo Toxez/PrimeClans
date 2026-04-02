@@ -220,3 +220,7 @@ perm:
   target-not-in-clan: "<#C25252>✘ <gray>| <white>Цей гравець <#C25252>не перебуває <white>у вашому клані"
   cannot-change-leader: "<#C25252>✘ <gray>| <white>Не можна змінювати права <#C25252>лідера <white>клана"
   no-perm: "<#C25252>✘ <gray>| <white>У вас <#C25252>немає права <white>на цю дію"
+
+storage:
+  no-clan: "<#C25252>✘ <gray>| <white>Ви <#C25252>не <white>перебуваєте в клані"
+  no-perm: "<#C25252>✘ <gray>| <white>У вас <#C25252>немає права <white>на цю дію"

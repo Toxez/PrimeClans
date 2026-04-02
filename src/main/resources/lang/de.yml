@@ -1,0 +1,213 @@
+help:
+  no-clan:
+    - ""
+    - " <#52C25A><click:suggest_command:/clan create ><hover:show_text:'<gray>Klicke, um einen Clan zu erstellen\n<gray>Verwendung: <green>/clan create [Name]'>/clan create [Name]</hover></click> <gray>— <white>Erstelle deinen eigenen Clan"
+    - " <#52C25A><click:suggest_command:/clan accept ><hover:show_text:'<gray>Klicke, um den Clan-Namen einzugeben\n<gray>Verwendung: <green>/clan accept [Clan]'>/clan accept [Clan]</hover></click> <gray>— <white>Einladung annehmen"
+    - " <gray>— <white>Du bist noch in keinem Clan"
+    - ""
+  in-clan:
+    - ""
+    - " <#52C25A><click:suggest_command:/clan invite ><hover:show_text:'<gray>Neues Mitglied in den Clan einladen\n<gray>Verwendung: <#52C25A>/clan invite [Spieler]'>/clan invite [Spieler]</hover></click> <gray>— <white>Spieler einladen"
+    - " <#C25252><click:suggest_command:/clan delete><hover:show_text:'<red>Achtung! <gray>Dies löscht deinen Clan vollständig\n<gray>ohne Möglichkeit auf Wiederherstellung.'>/clan delete</hover></click> <gray>— <white>Deinen Clan auflösen"
+    - " <#C25252><click:suggest_command:/clan kick ><hover:show_text:'<gray>Spieler aus dem Clan werfen\n<gray>Verwendung: <red>/clan kick [Spieler]'>/clan kick [Spieler]</hover></click> <gray>— <white>Spieler kicken"
+    - " <#C25252><click:suggest_command:/clan leave><hover:show_text:'<gray>Aktuellen Clan verlassen\n<red>Achtung! <gray>Der Anführer <red>kann nicht <gray>einfach so gehen'>/clan leave</hover></click> <gray>— <white>Clan verlassen"
+    - " <#C25252><click:suggest_command:/clan setleader ><hover:show_text:'<gray>Besitzrechte an anderen Spieler übertragen\n<red>Achtung! <gray>Danach bist du kein Anführer mehr\n<gray>Verwendung: <red>/clan setleader [Spieler]'>/clan setleader [Spieler]</hover></click> <gray>— <white>Leitung übergeben"
+    - " <#52C25A><click:suggest_command:/clan chat ><hover:show_text:'<gray>Nachricht in den Clan-Chat senden\n<gray>Verwendung: <#52C25A>/clan chat [Text]'>/clan chat [Text]</hover></click> <gray>— <white>Im Clan-Chat schreiben"
+    - " <#52C25A><click:run_command:/clan menu ><hover:show_text:'<gray>Öffnet das Clan-Menü\n<gray>Verwendung: <#52C25A>/clan menu'>/clan menu</hover></click> <gray>— <white>Clan-Menü öffnen"
+    - " <#52C25A><click:run_command:/clan pvp ><hover:show_text:'<gray>PvP-Modus umschalten\n<gray>Verwendung: <#52C25A>/clan pvp'>/clan pvp</hover></click> <gray>— <white>PvP-Modus umschalten"
+    - " <#FCD05C><click:run_command:/clan balance ><hover:show_text:'<gray>Kontostand der Clan-Kasse anzeigen\n<gray>Verwendung: <#FCD05C>/clan balance'>/clan balance</hover></click> <gray>— <white>Kassenbestand"
+    - " <#FCD05C><click:suggest_command:/clan invest ><hover:show_text:'<gray>Geld in die Clan-Kasse einzahlen\n<gray>Verwendung: <#FCD05C>/clan invest [Betrag]'>/clan invest [Betrag]</hover></click> <gray>— <white>Kasse auffüllen"
+    - " <#FCD05C><click:suggest_command:/clan withdraw ><hover:show_text:'<gray>Geld aus Kasse abheben <red>(nur Anführer)\n<gray>Verwendung: <#FCD05C>/clan withdraw [Betrag]'>/clan withdraw [Betrag]</hover></click> <gray>— <white>Geld abheben"
+    - " <#52C25A><click:run_command:/clan info ><hover:show_text:'<gray>Informationen über den Clan anzeigen\n<gray>Verwendung: <#52C25A>/clan info'>/clan info</hover></click> <gray>— <white>Clan-Infos"
+    - " <#52C25A><click:run_command:/clan glow><hover:show_text:'<gray>Clan-Leuchten ein-/ausschalten\n<gray>Verwendung: <#52C25A>/clan glow'>/clan glow</hover></click> <gray>— <white>Clan-Leuchten umschalten"
+    - " <gray>— <white>Du bist im Clan: <#FCD05C>{clan}"
+    - ""
+
+create:
+  usage:
+    - ""
+    - " <#C25252>Fehler! <white>Du musst einen Namen angeben"
+    - " <gray>— <#52C25A>/clan create [Name]"
+    - ""
+  already-exists: "<#C25252>✘ <gray>| <white>Der Clan <#FCD05C>{clan} <white>existiert bereits"
+  created: "<#52C25A>✔ <gray>| <white>Du hast <#52C25A>erfolgreich <white>den Clan <#FCD05C><hover:show_text:'<gray>Ja ja, es ist deiner'>{clan}</hover> erstellt"
+  no-money: "<#C25252>✘ <gray>| <white>Du hast <#C25252>nicht genug <white>Münzen, benötigt werden: <#52C25A>{cost}"
+  already-in-clan:
+    - ""
+    - " <#C25252>Fehler! <white>Du bist bereits in einem Clan."
+    - " <gray>— <white>Verlasse zuerst den aktuellen Clan"
+    - " <gray>— <white>um einen neuen zu erstellen"
+    - ""
+  invalid-length: "<#C25252>✘ <gray>| <white>Der Name muss zwischen <#FCD05C>{min} <white>und <#FCD05C>{max} <white>Zeichen lang sein"
+
+delete:
+  not-owner: "<#C25252>✘ <gray>| <white>Nur der <#C25252>Besitzer <white>kann den Clan löschen"
+  deleted: "<#52C25A>✔ <gray>| <white>Der Clan <#FCD05C>{clan} <white>wurde <#C25252>gelöscht"
+
+invite:
+  usage:
+    - ""
+    - " <#C25252>Fehler! <white>Du musst den Spielernamen angeben"
+    - " <gray>— <#52C25A>/clan invite [Spieler]"
+    - ""
+  not-owner: "<#C25252>✘ <gray>| <white>Nur der <#C25252>Anführer <white>kann Spieler einladen"
+  player-not-found: "<#C25252>✘ <gray>| <white>Spieler nicht gefunden oder offline"
+  already-in-clan: "<#C25252>✘ <gray>| <white>Dieser Spieler ist bereits in einem Clan"
+  invite-self: "<#C25252>✘ <gray>| <white>Du kannst dich nicht selbst einladen"
+  sent: "<#54C252>✔ <gray>| <white>Einladung an <#FCD05C>{player} <white>gesendet"
+  full-owner:
+    - ""
+    - " <#C25252>✘ <gray>| <white>Der Clan hat das Mitgliederlimit erreicht:"
+    - "       <#FCD05C>{current}<gray>/<#FCD05C>{max}"
+    - " <gray>— <white>Um mehr Spieler einzuladen —"
+    - " <gray>— <white>erhöhe das Clan-Level"
+    - ""
+
+  received:
+    - ""
+    - " <white>Du wurdest in den Clan <#FCD05C>{clan} <white>eingeladen"
+    - " <white>Du hast <#FCD05C>{time} Sek. <white>um anzunehmen"
+    - "       <#54C252><click:run_command:/clan accept {clan}><hover:show_text:'<#54C252>Klicke, um dem Clan beizutreten'>[Einladung annehmen]</hover></click>"
+    - ""
+
+accept:
+  usage:
+    - ""
+    - " <#C25252>Fehler! <white>Du musst den Clan-Namen angeben"
+    - " <gray>— <#52C25A>/clan accept [Name]"
+    - ""
+  no-invite: "<#C25252>✘ <gray>| <white>Du hast keine aktive Einladung für diesen Clan"
+  success: "<#52C25A>✔ <gray>| <white>Du bist dem Clan <#FCD05C>{clan} <white>beigetreten"
+  joined-notify: "<#52C25A>+ <gray>| <white>Spieler <#FCD05C>{player} <white>ist dem Clan beigetreten"
+  clan-full:
+    - ""
+    - " <#C25252>✘ <gray>| <white>Der Clan <#FCD05C>{clan} <white>ist voll:"
+    - "       <#FCD05C>{current}<gray>/<#FCD05C>{max}"
+    - " <gray>— <white>Beitreten derzeit unmöglich"
+    - " <gray>— <white>Bitte den Anführer, das Level zu erhöhen"
+    - ""
+
+kick:
+  usage:
+    - ""
+    - " <#C25252>Fehler! <white>Du musst den Spielernamen angeben"
+    - " <gray>— <#52C25A>/clan kick [Spieler]"
+    - ""
+  not-in-your-clan: "<#C25252>✘ <gray>| <white>Dieser Spieler ist nicht in deinem Clan"
+  kick-self: "<#C25252>✘ <gray>| <white>Der Anführer kann sich nicht selbst kicken"
+  success: "<#52C25A>✔ <gray>| <white>Du hast <#FCD05C>{player} <white>aus dem Clan gekickt"
+  kicked-notify: "<#C25252>✘ <gray>| <white>Du wurdest aus dem Clan <#FCD05C>{clan} <white>geworfen"
+  not-owner: "<#C25252>✘ <gray>| <white>Nur der <#C25252>Anführer <white>kann Mitglieder kicken"
+
+leave:
+  is-owner:
+    - ""
+    - " <#C25252>Fehler! <white>Du bist der Anführer des Clans"
+    - " <gray>— <white>Du kannst nicht einfach gehen"
+    - " <gray>— <white>Nutze <#C25252>/clan delete <white>zum Löschen"
+    - ""
+  success: "<#52C25A>✔ <gray>| <white>Du hast den Clan <#FCD05C>{clan} <white>verlassen"
+  left-notify: "<#C25252>- <gray>| <white>Spieler <#FCD05C>{player} <white>hat den Clan verlassen"
+
+# Erst wenn wir alles verloren haben, haben wir die Freiheit, alles zu tun...
+setleader:
+  usage:
+    - ""
+    - " <#C25252>Fehler! <white>Du musst den Spielernamen angeben"
+    - " <gray>— <#52C25A>/clan setleader [Spieler]"
+    - ""
+  not-owner:
+    - ""
+    - " <#C25252>Fehler! <white>Du bist nicht der Anführer"
+    - " <gray>— <white>Nur der aktuelle Besitzer"
+    - " <gray>— <white>kann die Rechte übertragen"
+    - ""
+  not-in-clan: "<#C25252>✘ <gray>| <white>Dieser Spieler ist nicht in deinem Clan"
+  self: "<#C25252>✘ <gray>| <white>Du bist bereits der Anführer"
+  success: "<#52C25A>✔ <gray>| <white>Du hast die Leitung an <#FCD05C>{player} <white>übergeben"
+  new-leader-notify:
+    - ""
+    - " <#52C25A>★ <white>Du bist jetzt der neue <#FCD05C>Anführer <white>des Clans!"
+    - " <gray>— <white>Spieler <#FCD05C>{player} <white>hat dir seine Rechte übertragen"
+    - ""
+
+clan-chat:
+  usage: "<#C25252>✘ <gray>| <white>Verwendung: <#52C25A>/clan chat [Text]"
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  empty-message: "<#C25252>✘ <gray>| <white>Die Nachricht <#C25252>darf nicht <white>leer sein"
+
+menu:
+  no-clan: "<#C25252>✘ <gray>| <white>Du hast <#C25252>keinen <white>Clan"
+
+pvp:
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  not-owner: "<#C25252>✘ <gray>| <white>Nur der <#C25252>Anführer <white>kann die PvP-Einstellung ändern"
+  enabled: "<#52C25A>✔ <gray>| <white>Clan-PvP ist <#52C25A>aktiviert"
+  disabled: "<#C25252>✘ <gray>| <white>Clan-PvP ist <#C25252>deaktiviert"
+
+balance:
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  info:
+    - ""
+    - " <#FCD05C>⚑ <gray>| <white>Clan-Kasse <#FCD05C>{clan}"
+    - " <gray>— <white>Kontostand: <#52C25A>{balance}"
+    - ""
+
+invest:
+  usage:
+    - ""
+    - " <#C25252>Fehler! <white>Du musst einen Betrag angeben"
+    - " <gray>— <#52C25A>/clan invest [Betrag]"
+    - ""
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  no-money: "<#C25252>✘ <gray>| <white>Nicht <#C25252>genug <white>Münzen, benötigt: <#FCD05C>{amount}"
+  success: "<#52C25A>✔ <gray>| <white>Du hast <#FCD05C>{amount} <white>eingezahlt. Kontostand: <#52C25A>{balance}"
+
+withdraw:
+  usage:
+    - ""
+    - " <#C25252>Fehler! <white>Du musst einen Betrag angeben"
+    - " <gray>— <#52C25A>/clan withdraw [Betrag]"
+    - ""
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  not-owner: "<#C25252>✘ <gray>| <white>Nur der <#C25252>Anführer <white>kann Geld abheben"
+  not-enough: "<#C25252>✘ <gray>| <white>Zu wenig <#C25252>Geld <white>in der Kasse. Verfügbar: <#FCD05C>{balance}"
+  success: "<#52C25A>✔ <gray>| <white>Du hast <#FCD05C>{amount} <white>abgehoben. Kontostand: <#52C25A>{balance}"
+
+info:
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  content:
+    - ""
+    - "<#FACC15>★ <gray>| <white>Informationen über <#FACC15>{clan_name}"
+    - ""
+    - "  <gray>- <white>Anführer: <#FACC15>{clan_owner}"
+    - "  <gray>- <white>Level: <#52C25A>{clan_level}"
+    - "  <gray>- <white>Erfahrung: <#52C25A>{clan_exp} <gray>(bis next: <#52C25A>{clan_exp_to_next}<gray>)"
+    - "  <gray>- <white>Mitglieder: <#52C25A>{clan_members_info} <gray>(Online: <#52C25A>{members_online}<gray>)"
+    - "  <gray>- <white>Kontostand: <#FACC15>{clan_balance}"
+    - "  <gray>- <white>PvP: {clan_pvp}"
+    - ""
+    - "  <gray>- <white>Alle Mitglieder:"
+    - "    <#52C25A>{clan_members_list}"
+    - ""
+    - "  <gray>- <white>Aktuell Online:"
+    - "    <#52C25A>{clan_members_online_list}"
+    - ""
+
+glow:
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  not-owner: "<#C25252>✘ <gray>| <white>Nur der <#C25252>Anführer <white>kann Glow verwalten"
+  enabled: "<#52C25A>✔ <gray>| <white>Clan-Leuchten <#52C25A>aktiviert"
+  disabled: "<#C25252>✘ <gray>| <white>Clan-Leuchten <#C25252>deaktiviert"
+  member-color-reset: "<#52C25A>✔ <gray>| <white>Die Leuchtfarbe von <#FCD05C>{player} <white>wurde zurückgesetzt"
+
+perm:
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  not-leader: "<#C25252>✘ <gray>| <white>Nur der <#C25252>Anführer <white>kann Rechte verwalten"
+  target-not-in-clan: "<#C25252>✘ <gray>| <white>Dieser Spieler ist <#C25252>nicht <white>im Clan"
+  cannot-change-leader: "<#C25252>✘ <gray>| <white>Rechte des <#C25252>Anführers <white>können nicht geändert werden"
+  no-perm: "<#C25252>✘ <gray>| <white>Du hast <#C25252>keine Rechte <white>für diese Aktion"
+
+storage:
+  no-clan: "<#C25252>✘ <gray>| <white>Du bist <#C25252>nicht <white>in einem Clan"
+  no-perm: "<#C25252>✘ <gray>| <white>Du hast <#C25252>keine Rechte <white>für diese Aktion"
