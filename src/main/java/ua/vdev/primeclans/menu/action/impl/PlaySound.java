@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import ua.vdev.primeclans.menu.action.MenuAction;
 
 public class PlaySound implements MenuAction {
+
     private final Sound sound;
     private final float volume;
     private final float pitch;

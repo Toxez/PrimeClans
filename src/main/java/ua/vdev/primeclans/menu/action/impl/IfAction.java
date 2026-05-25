@@ -1,10 +1,9 @@
 package ua.vdev.primeclans.menu.action.impl;
 
+import java.util.List;
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.menu.action.ConditionEvaluator;
 import ua.vdev.primeclans.menu.action.MenuAction;
-
-import java.util.List;
 
 public class IfAction implements MenuAction {
 
@@ -12,7 +11,11 @@ public class IfAction implements MenuAction {
     private final List<MenuAction> thenActions;
     private final List<MenuAction> elseActions;
 
-    public IfAction(String condition, List<MenuAction> thenActions, List<MenuAction> elseActions) {
+    public IfAction(
+        String condition,
+        List<MenuAction> thenActions,
+        List<MenuAction> elseActions
+    ) {
         this.condition = condition;
         this.thenActions = thenActions;
         this.elseActions = elseActions;

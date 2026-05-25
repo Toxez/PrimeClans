@@ -1,13 +1,13 @@
 package ua.vdev.primeclans.menu.action.impl;
 
+import java.util.Map;
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.menu.action.MenuAction;
 import ua.vdev.primeclans.util.Lang;
 
-import java.util.Map;
-
 public class DeleteClan implements MenuAction {
+
     private final String clanName;
 
     public DeleteClan(String clanName) {

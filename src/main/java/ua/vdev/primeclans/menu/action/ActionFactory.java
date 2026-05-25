@@ -1,31 +1,50 @@
 package ua.vdev.primeclans.menu.action;
 
-import ua.vdev.primeclans.api.action.ActionRegistry;
-import ua.vdev.primeclans.menu.action.impl.*;
+import java.util.*;
 import org.bukkit.Sound;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.*;
+import ua.vdev.primeclans.api.action.ActionRegistry;
+import ua.vdev.primeclans.menu.action.impl.*;
 
 public class ActionFactory {
 
-    public static List<MenuAction> create(List<?> rawActions, Map<String, Object> context) {
-        if (rawActions == null || rawActions.isEmpty()) return Collections.emptyList();
+    public static List<MenuAction> create(
+        List<?> rawActions,
+        Map<String, Object> context
+    ) {
+        if (
+            rawActions == null || rawActions.isEmpty()
+        ) return Collections.emptyList();
 
-        String clanName = getContextValue(context, "clan_name", String.class).orElse(null);
+        String clanName = getContextValue(
+            context,
+            "clan_name",
+            String.class
+        ).orElse(null);
         Map<String, String> placeholders = getSafePlaceholders(context);
-        Optional<UUID> targetUuidOpt = getContextValue(context, "target_uuid", String.class)
-                .flatMap(s -> {
-                    try { return Optional.of(UUID.fromString(s)); }
-                    catch (IllegalArgumentException e) { return Optional.empty(); }
-                });
+        Optional<UUID> targetUuidOpt = getContextValue(
+            context,
+            "target_uuid",
+            String.class
+        ).flatMap(s -> {
+            try {
+                return Optional.of(UUID.fromString(s));
+            } catch (IllegalArgumentException e) {
+                return Optional.empty();
+            }
+        });
 
         List<MenuAction> parsedActions = new ArrayList<>();
 
         for (Object rawObj : rawActions) {
             if (rawObj instanceof String rawStr) {
-                parseSingleStringAction(rawStr, clanName, placeholders, targetUuidOpt, context)
-                        .ifPresent(parsedActions::add);
+                parseSingleStringAction(
+                    rawStr,
+                    clanName,
+                    placeholders,
+                    targetUuidOpt,
+                    context
+                ).ifPresent(parsedActions::add);
             } else if (rawObj instanceof Map<?, ?> map) {
                 if (map.containsKey("if")) {
                     parsedActions.add(parseIfAction(map, context));
@@ -36,16 +55,27 @@ public class ActionFactory {
         return parsedActions;
     }
 
-    private static MenuAction parseIfAction(Map<?, ?> map, Map<String, Object> context) {
+    private static MenuAction parseIfAction(
+        Map<?, ?> map,
+        Map<String, Object> context
+    ) {
         Object ifBlockObj = map.get("if");
         String condition = "false";
 
         if (ifBlockObj instanceof Map<?, ?> ifBlock) {
-            condition = Optional.ofNullable(ifBlock.get("condition")).map(Object::toString).orElse("false");
+            condition = Optional.ofNullable(ifBlock.get("condition"))
+                .map(Object::toString)
+                .orElse("false");
         }
 
-        List<MenuAction> thenActions = create(getListFromMap(map, "then"), context);
-        List<MenuAction> elseActions = create(getListFromMap(map, "else"), context);
+        List<MenuAction> thenActions = create(
+            getListFromMap(map, "then"),
+            context
+        );
+        List<MenuAction> elseActions = create(
+            getListFromMap(map, "else"),
+            context
+        );
 
         return new IfAction(condition, thenActions, elseActions);
     }
@@ -59,35 +89,51 @@ public class ActionFactory {
     }
 
     private static Optional<MenuAction> parseSingleStringAction(
-            String raw, String clanName, Map<String, String> placeholders,
-            Optional<UUID> targetUuidOpt, Map<String, Object> context) {
-
+        String raw,
+        String clanName,
+        Map<String, String> placeholders,
+        Optional<UUID> targetUuidOpt,
+        Map<String, Object> context
+    ) {
         String trimmed = raw.trim();
-        Optional<MenuAction> std = ActionType.fromRaw(trimmed)
-                .flatMap(type -> buildAction(type, trimmed, clanName, placeholders, targetUuidOpt));
+        Optional<MenuAction> std = ActionType.fromRaw(trimmed).flatMap(type ->
+            buildAction(type, trimmed, clanName, placeholders, targetUuidOpt)
+        );
 
         if (std.isPresent()) return std;
 
-        return ActionRegistry.findMatch(trimmed)
-                .map(match -> {
-                    String processedArg = replacePlaceholders(match.arg(), placeholders);
-                    return (MenuAction) player -> match.action().execute(player, processedArg, context);
-                });
+        return ActionRegistry.findMatch(trimmed).map(match -> {
+            String processedArg = replacePlaceholders(
+                match.arg(),
+                placeholders
+            );
+            return (MenuAction) player ->
+                match.action().execute(player, processedArg, context);
+        });
     }
 
     private static Optional<MenuAction> buildAction(
-            ActionType type, String raw, String clanName,
-            Map<String, String> placeholders, Optional<UUID> targetUuidOpt
+        ActionType type,
+        String raw,
+        String clanName,
+        Map<String, String> placeholders,
+        Optional<UUID> targetUuidOpt
     ) {
         String arg = raw.substring(type.getPrefix().length()).trim();
         String processedArg = replacePlaceholders(arg, placeholders);
 
         return switch (type) {
             case CLOSE -> Optional.of(new Close());
-            case MESSAGE -> Optional.of(new Message(processedArg, placeholders));
+            case MESSAGE -> Optional.of(
+                new Message(processedArg, placeholders)
+            );
             case OPEN_MENU -> Optional.of(new OpenMenu(processedArg));
-            case CREATE_CLAN -> Optional.ofNullable(clanName).map(CreateClan::new);
-            case DELETE_CLAN -> Optional.ofNullable(clanName).map(DeleteClan::new);
+            case CREATE_CLAN -> Optional.ofNullable(clanName).map(
+                CreateClan::new
+            );
+            case DELETE_CLAN -> Optional.ofNullable(clanName).map(
+                DeleteClan::new
+            );
             case PLAY_SOUND -> parseSound(processedArg);
             case PLAYER_COMMAND -> Optional.of(new Player(processedArg));
             case CONSOLE_COMMAND -> Optional.of(new Console(processedArg));
@@ -97,11 +143,15 @@ public class ActionFactory {
             case ENABLE_GLOW -> Optional.of(new EnableGlow());
             case DISABLE_GLOW -> Optional.of(new DisableGlow());
             case SET_GLOW_COLOR -> Optional.of(new SetGlowColor(processedArg));
-            case SET_MEMBER_GLOW_COLOR -> targetUuidOpt.map(uuid -> new SetMemberGlowColor(uuid, processedArg));
-            case RESET_MEMBER_GLOW_COLOR -> targetUuidOpt.map(ResetMemberGlowColor::new);
+            case SET_MEMBER_GLOW_COLOR -> targetUuidOpt.map(uuid ->
+                new SetMemberGlowColor(uuid, processedArg)
+            );
+            case RESET_MEMBER_GLOW_COLOR -> targetUuidOpt.map(
+                ResetMemberGlowColor::new
+            );
             case TOGGLE_PERM -> targetUuidOpt
-                    .filter(uuid -> !processedArg.isBlank())
-                    .map(uuid -> new TogglePerm(uuid, processedArg));
+                .filter(uuid -> !processedArg.isBlank())
+                .map(uuid -> new TogglePerm(uuid, processedArg));
         };
     }
 
@@ -124,10 +174,15 @@ public class ActionFactory {
             if (parts.length >= 2) {
                 String title = parts[0].trim();
                 String subtitle = parts.length > 1 ? parts[1].trim() : "";
-                int fadeIn = parts.length > 2 ? Integer.parseInt(parts[2].trim()) : 10;
-                int stay = parts.length > 3 ? Integer.parseInt(parts[3].trim()) : 70;
-                int fadeOut = parts.length > 4 ? Integer.parseInt(parts[4].trim()) : 20;
-                return Optional.of(new Title(title, subtitle, fadeIn, stay, fadeOut));
+                int fadeIn =
+                    parts.length > 2 ? Integer.parseInt(parts[2].trim()) : 10;
+                int stay =
+                    parts.length > 3 ? Integer.parseInt(parts[3].trim()) : 70;
+                int fadeOut =
+                    parts.length > 4 ? Integer.parseInt(parts[4].trim()) : 20;
+                return Optional.of(
+                    new Title(title, subtitle, fadeIn, stay, fadeOut)
+                );
             }
         } catch (Exception ignored) {}
         return Optional.empty();
@@ -137,7 +192,8 @@ public class ActionFactory {
         try {
             String[] parts = arg.split(";");
             String message = parts[0].trim();
-            int duration = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 60;
+            int duration =
+                parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 60;
             return Optional.of(new ActionBar(message, duration));
         } catch (Exception ignored) {}
         return Optional.empty();
@@ -146,36 +202,54 @@ public class ActionFactory {
     private static Optional<MenuAction> parseEffect(String arg) {
         try {
             String[] parts = arg.split(";");
-            PotionEffectType effectType = PotionEffectType.getByName(parts[0].trim().toUpperCase());
+            PotionEffectType effectType = PotionEffectType.getByName(
+                parts[0].trim().toUpperCase()
+            );
             if (effectType == null) return Optional.empty();
-            int duration = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 200;
-            int amplifier = parts.length > 2 ? Integer.parseInt(parts[2].trim()) : 0;
+            int duration =
+                parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 200;
+            int amplifier =
+                parts.length > 2 ? Integer.parseInt(parts[2].trim()) : 0;
             return Optional.of(new Effect(effectType, duration, amplifier));
         } catch (Exception ignored) {}
         return Optional.empty();
     }
 
-    private static String replacePlaceholders(String text, Map<String, String> placeholders) {
+    private static String replacePlaceholders(
+        String text,
+        Map<String, String> placeholders
+    ) {
         if (text == null || placeholders == null) return text;
         String result = text;
         for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-            result = result.replace("{" + entry.getKey() + "}", entry.getValue());
+            result = result.replace(
+                "{" + entry.getKey() + "}",
+                entry.getValue()
+            );
         }
         return result;
     }
 
-    private static <T> Optional<T> getContextValue(Map<String, Object> context, String key, Class<T> type) {
+    private static <T> Optional<T> getContextValue(
+        Map<String, Object> context,
+        String key,
+        Class<T> type
+    ) {
         return Optional.ofNullable(context.get(key))
-                .filter(type::isInstance)
-                .map(type::cast);
+            .filter(type::isInstance)
+            .map(type::cast);
     }
 
-    private static Map<String, String> getSafePlaceholders(Map<String, Object> context) {
+    private static Map<String, String> getSafePlaceholders(
+        Map<String, Object> context
+    ) {
         Object value = context.get("placeholders");
         if (value instanceof Map<?, ?> map) {
             Map<String, String> result = new HashMap<>();
             map.forEach((k, v) -> {
-                if (k instanceof String sk && v instanceof String sv) result.put(sk, sv);
+                if (
+                    k instanceof String sk && v instanceof String sv
+                ) result.put(sk, sv);
             });
             return result;
         }

@@ -17,6 +17,7 @@ import ua.vdev.primeclans.menu.helper.MenuHelper;
 import ua.vdev.primeclans.model.Clan;
 import ua.vdev.primeclans.perm.ClanPermRegistry;
 import ua.vdev.vlibapi.util.TextColor;
+import ua.vdev.vlibapi.util.scheduler.Task;
 import java.util.*;
 
 public class PlayerPerm implements Menu {
@@ -35,19 +36,45 @@ public class PlayerPerm implements Menu {
 
     @Override
     public void open(Player player) {
-        YamlConfiguration config = menuConfig.get();
-        Optional.ofNullable(config.getConfigurationSection("menu")).ifPresent(menuSection -> {
-            Map<String, String> placeholders = buildPlaceholders(menuSection);
-            Inventory inventory = createInventory(menuSection, placeholders);
-            leftActions.clear();
-            rightActions.clear();
-            Map<String, Object> actionContext = Map.of(
-                    "clan_name", clan.name(),
-                    "target_uuid", targetUuid.toString(),
-                    "placeholders", placeholders
-            );
-            MenuHelper.loadMenuItems(inventory, menuSection, placeholders, actionContext, leftActions, rightActions);
-            player.openInventory(inventory);
+        Task.sync(() -> {
+            if (!player.isOnline()) return;
+
+            YamlConfiguration config = menuConfig.get();
+            Optional.ofNullable(config.getConfigurationSection("menu")).ifPresent(menuSection -> {
+                Map<String, String> placeholders = buildPlaceholders(menuSection);
+
+                Inventory inventory = null;
+                boolean isUpdating = false;
+
+                if (player.getOpenInventory().getTopInventory().getHolder() instanceof MenuHolder holder) {
+                    if (holder.getMenuId().equals(getId())) {
+                        inventory = player.getOpenInventory().getTopInventory();
+                        inventory.clear();
+                        isUpdating = true;
+                    }
+                }
+
+                if (inventory == null) {
+                    inventory = createInventory(menuSection, placeholders);
+                }
+
+                leftActions.clear();
+                rightActions.clear();
+
+                Map<String, Object> actionContext = Map.of(
+                        "clan_name", clan.name(),
+                        "target_uuid", targetUuid.toString(),
+                        "placeholders", placeholders
+                );
+
+                MenuHelper.loadMenuItems(inventory, menuSection, placeholders, actionContext, leftActions, rightActions);
+
+                if (!isUpdating) {
+                    player.openInventory(inventory);
+                } else {
+                    player.updateInventory();
+                }
+            });
         });
     }
 

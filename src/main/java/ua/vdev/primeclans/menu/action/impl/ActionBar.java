@@ -1,13 +1,13 @@
 package ua.vdev.primeclans.menu.action.impl;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.menu.action.MenuAction;
 import ua.vdev.vlibapi.player.PlayerMsg;
 import ua.vdev.vlibapi.util.scheduler.Task;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class ActionBar implements MenuAction {
+
     private final String message;
     private final int durationTicks;
 

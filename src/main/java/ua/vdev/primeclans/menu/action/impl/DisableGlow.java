@@ -1,5 +1,7 @@
 package ua.vdev.primeclans.menu.action.impl;
 
+import java.util.Map;
+import java.util.Optional;
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.glow.manager.GlowManager;
@@ -11,19 +13,17 @@ import ua.vdev.primeclans.perm.ClanPerm;
 import ua.vdev.primeclans.util.Lang;
 import ua.vdev.vlibapi.player.PlayerFind;
 
-import java.util.Map;
-import java.util.Optional;
-
 public class DisableGlow implements MenuAction {
 
     @Override
     public void execute(Player player) {
         ClanManager clanManager = PrimeClans.getInstance().getClanManager();
-        clanManager.getPlayerClan(player.getUniqueId())
-                .ifPresentOrElse(
-                        clan -> processDisableGlow(player, clan),
-                        () -> Lang.send(player, "glow.no-clan")
-                );
+        clanManager
+            .getPlayerClan(player.getUniqueId())
+            .ifPresentOrElse(
+                clan -> processDisableGlow(player, clan),
+                () -> Lang.send(player, "glow.no-clan")
+            );
     }
 
     private void processDisableGlow(Player player, Clan clan) {
@@ -32,13 +32,15 @@ public class DisableGlow implements MenuAction {
             return;
         }
         Map<String, String> placeholders = Map.of("clan", clan.name());
-        clan.members().stream()
-                .map(PlayerFind::uuid)
-                .flatMap(Optional::stream)
-                .forEach(member -> {
-                    GlowManager.disable(member);
-                    Lang.send(member, "glow.disabled", placeholders);
-                });
+        clan
+            .members()
+            .stream()
+            .map(PlayerFind::uuid)
+            .flatMap(Optional::stream)
+            .forEach(member -> {
+                GlowManager.disable(member);
+                Lang.send(member, "glow.disabled", placeholders);
+            });
 
         GlowUpdater.forceUpdateAll(clan);
     }

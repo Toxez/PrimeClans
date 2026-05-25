@@ -1,16 +1,21 @@
 package ua.vdev.primeclans.menu.config;
 
+import java.io.File;
+import java.io.IOException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.menu.MenuType;
-import java.io.File;
-import java.io.IOException;
 
 public class MenuConfig {
+
     private final File file;
     private YamlConfiguration config;
+
     public MenuConfig(MenuType type) {
-        File menuDir = new File(PrimeClans.getInstance().getDataFolder(), "menu");
+        File menuDir = new File(
+            PrimeClans.getInstance().getDataFolder(),
+            "menu"
+        );
         if (!menuDir.exists()) {
             menuDir.mkdirs();
         }
@@ -19,7 +24,10 @@ public class MenuConfig {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                PrimeClans.getInstance().saveResource("menu/" + fileName, false);
+                PrimeClans.getInstance().saveResource(
+                    "menu/" + fileName,
+                    false
+                );
             } catch (IOException e) {
                 e.printStackTrace();
             }

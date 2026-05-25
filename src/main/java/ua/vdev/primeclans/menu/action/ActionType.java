@@ -36,7 +36,7 @@ public enum ActionType {
         if (raw == null || raw.isBlank()) return Optional.empty();
         String lower = raw.toLowerCase().trim();
         return Arrays.stream(values())
-                .filter(type -> lower.startsWith(type.prefix.toLowerCase()))
-                .findFirst();
+            .filter(type -> lower.startsWith(type.prefix.toLowerCase()))
+            .findFirst();
     }
 }

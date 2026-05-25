@@ -5,6 +5,7 @@ import ua.vdev.primeclans.menu.MenuManager;
 import ua.vdev.primeclans.menu.action.MenuAction;
 
 public class Close implements MenuAction {
+
     @Override
     public void execute(Player player) {
         player.closeInventory();

@@ -1,5 +1,6 @@
 package ua.vdev.primeclans.menu.action.impl;
 
+import java.util.Optional;
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.api.menu.MenuRegistry;
@@ -13,9 +14,8 @@ import ua.vdev.primeclans.menu.impl.PlayerList;
 import ua.vdev.primeclans.perm.ClanPerm;
 import ua.vdev.vlibapi.player.PlayerMsg;
 
-import java.util.Optional;
-
 public class OpenMenu implements MenuAction {
+
     private final String menuId;
 
     public OpenMenu(String menuId) {
@@ -25,46 +25,74 @@ public class OpenMenu implements MenuAction {
     @Override
     public void execute(Player player) {
         if (menuId.equalsIgnoreCase("storage")) {
-            PrimeClans.getInstance().getClanManager().getPlayerClan(player.getUniqueId()).ifPresentOrElse(clan -> {
-                if (!clan.hasPerm(player.getUniqueId(), ClanPerm.valueOf("STORAGE_ACCESS"))) {
-                    ua.vdev.primeclans.util.Lang.send(player, "storage.no-perm");
-                    return;
-                }
-                PrimeClans.getInstance().getStorageManager().openStorage(player, clan);
-            }, () -> ua.vdev.primeclans.util.Lang.send(player, "storage.no-clan"));
+            PrimeClans.getInstance()
+                .getClanManager()
+                .getPlayerClan(player.getUniqueId())
+                .ifPresentOrElse(
+                    clan -> {
+                        if (
+                            !clan.hasPerm(
+                                player.getUniqueId(),
+                                ClanPerm.valueOf("STORAGE_ACCESS")
+                            )
+                        ) {
+                            ua.vdev.primeclans.util.Lang.send(
+                                player,
+                                "storage.no-perm"
+                            );
+                            return;
+                        }
+                        PrimeClans.getInstance()
+                            .getStorageManager()
+                            .openStorage(player, clan);
+                    },
+                    () ->
+                        ua.vdev.primeclans.util.Lang.send(
+                            player,
+                            "storage.no-clan"
+                        )
+                );
             return;
         }
 
-        createMenuById(player, menuId)
-                .ifPresentOrElse(
-                        menu -> MenuManager.openMenu(player, menu),
-                        () -> PlayerMsg.send(player, "<red>Меню <gold>" + menuId + " <red>не найдено")
-                );
+        createMenuById(player, menuId).ifPresentOrElse(
+            menu -> MenuManager.openMenu(player, menu),
+            () ->
+                PlayerMsg.send(
+                    player,
+                    "<red>Меню <gold>" + menuId + " <red>не найдено"
+                )
+        );
     }
 
     private Optional<Menu> createMenuById(Player player, String id) {
         String lower = id.toLowerCase();
 
         Optional<Menu> coreMenu = switch (lower) {
-            case "main-menu" -> PrimeClans.getInstance().getClanManager()
-                    .getPlayerClan(player.getUniqueId())
-                    .map(MainMenu::new);
-            case "player-list" -> PrimeClans.getInstance().getClanManager()
-                    .getPlayerClan(player.getUniqueId())
-                    .map(PlayerList::new);
-            case "glow" -> PrimeClans.getInstance().getClanManager()
-                    .getPlayerClan(player.getUniqueId())
-                    .map(GlowMenu::new);
-            case "player-glow-list" -> PrimeClans.getInstance().getClanManager()
-                    .getPlayerClan(player.getUniqueId())
-                    .map(PlayerGlowList::new);
+            case "main-menu" -> PrimeClans.getInstance()
+                .getClanManager()
+                .getPlayerClan(player.getUniqueId())
+                .map(MainMenu::new);
+            case "player-list" -> PrimeClans.getInstance()
+                .getClanManager()
+                .getPlayerClan(player.getUniqueId())
+                .map(PlayerList::new);
+            case "glow" -> PrimeClans.getInstance()
+                .getClanManager()
+                .getPlayerClan(player.getUniqueId())
+                .map(GlowMenu::new);
+            case "player-glow-list" -> PrimeClans.getInstance()
+                .getClanManager()
+                .getPlayerClan(player.getUniqueId())
+                .map(PlayerGlowList::new);
             default -> Optional.empty();
         };
 
         if (coreMenu.isPresent()) return coreMenu;
 
-        return PrimeClans.getInstance().getClanManager()
-                .getPlayerClan(player.getUniqueId())
-                .flatMap(clan -> MenuRegistry.create(lower, clan));
+        return PrimeClans.getInstance()
+            .getClanManager()
+            .getPlayerClan(player.getUniqueId())
+            .flatMap(clan -> MenuRegistry.create(lower, clan));
     }
 }

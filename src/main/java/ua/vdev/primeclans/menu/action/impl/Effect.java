@@ -1,13 +1,13 @@
 package ua.vdev.primeclans.menu.action.impl;
 
+import java.util.Optional;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import ua.vdev.primeclans.menu.action.MenuAction;
 
-import java.util.Optional;
-
 public class Effect implements MenuAction {
+
     private final PotionEffectType effectType;
     private final int duration;
     private final int amplifier;
@@ -21,7 +21,7 @@ public class Effect implements MenuAction {
     @Override
     public void execute(Player player) {
         Optional.ofNullable(effectType)
-                .map(type -> new PotionEffect(type, duration, amplifier))
-                .ifPresent(player::addPotionEffect);
+            .map(type -> new PotionEffect(type, duration, amplifier))
+            .ifPresent(player::addPotionEffect);
     }
 }

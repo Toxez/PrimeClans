@@ -1,5 +1,6 @@
 package ua.vdev.primeclans.menu.action;
 
+import java.util.Optional;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -7,15 +8,14 @@ import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.api.variable.VariableRegistry;
 import ua.vdev.primeclans.model.Clan;
 
-import java.util.Optional;
-
 public class ConditionEvaluator {
 
     public static boolean evaluate(Player player, String condition) {
         if (condition == null || condition.isBlank()) return false;
-        Clan clan = PrimeClans.getInstance().getClanManager()
-                .getPlayerClan(player.getUniqueId())
-                .orElse(null);
+        Clan clan = PrimeClans.getInstance()
+            .getClanManager()
+            .getPlayerClan(player.getUniqueId())
+            .orElse(null);
 
         String parsed = VariableRegistry.replaceAll(condition, player, clan);
 
@@ -39,7 +39,10 @@ public class ConditionEvaluator {
         // оно тут так как ему нужно знать правую часть выражения (само право) не нужно мне писать об этом в тг пожалуйста
         if (left.equalsIgnoreCase("has_clan_perm")) {
             if (clan == null) return operator == Operator.NOT_EQUALS;
-            boolean hasPerm = clan.hasPerm(player.getUniqueId(), right.toUpperCase());
+            boolean hasPerm = clan.hasPerm(
+                player.getUniqueId(),
+                right.toUpperCase()
+            );
             return operator == Operator.EQUALS ? hasPerm : !hasPerm;
         }
 

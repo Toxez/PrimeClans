@@ -1,5 +1,7 @@
 package ua.vdev.primeclans.menu.action.impl;
 
+import java.util.Optional;
+import java.util.UUID;
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.primeclans.glow.GlowColor;
@@ -8,9 +10,6 @@ import ua.vdev.primeclans.menu.action.MenuAction;
 import ua.vdev.primeclans.perm.ClanPerm;
 import ua.vdev.primeclans.util.Lang;
 import ua.vdev.vlibapi.player.PlayerMsg;
-
-import java.util.Optional;
-import java.util.UUID;
 
 public class SetMemberGlowColor implements MenuAction {
 
@@ -25,33 +24,55 @@ public class SetMemberGlowColor implements MenuAction {
     @Override
     public void execute(Player player) {
         ClanManager cm = PrimeClans.getInstance().getClanManager();
-        cm.getPlayerClan(player.getUniqueId()).ifPresentOrElse(clan -> {
-            if (!clan.hasPerm(player.getUniqueId(), ClanPerm.MANAGE_MEMBER_GLOW)) {
-                Lang.send(player, "perm.no-perm");
-                return;
-            }
+        cm
+            .getPlayerClan(player.getUniqueId())
+            .ifPresentOrElse(
+                clan -> {
+                    if (
+                        !clan.hasPerm(
+                            player.getUniqueId(),
+                            ClanPerm.MANAGE_MEMBER_GLOW
+                        )
+                    ) {
+                        Lang.send(player, "perm.no-perm");
+                        return;
+                    }
 
-            if (!clan.members().contains(targetUuid)) {
-                PlayerMsg.send(player, "<red>Этот игрок не состоит в вашем клане");
-                return;
-            }
+                    if (!clan.members().contains(targetUuid)) {
+                        PlayerMsg.send(
+                            player,
+                            "<red>Этот игрок не состоит в вашем клане"
+                        );
+                        return;
+                    }
 
-            parseColor().ifPresentOrElse(
-                    color -> {
-                        cm.setMemberGlowColor(clan.name(), targetUuid, color);
-                        player.updateInventory();
-                    },
-                    () -> PlayerMsg.send(player, "<red>Неправильный формат цвета: <gold>" + colorInput)
+                    parseColor().ifPresentOrElse(
+                        color -> {
+                            cm.setMemberGlowColor(
+                                clan.name(),
+                                targetUuid,
+                                color
+                            );
+                            player.updateInventory();
+                        },
+                        () ->
+                            PlayerMsg.send(
+                                player,
+                                "<red>Неправильный формат цвета: <gold>" +
+                                    colorInput
+                            )
+                    );
+                },
+                () -> Lang.send(player, "glow.no-clan")
             );
-        }, () -> Lang.send(player, "glow.no-clan"));
     }
 
     private Optional<GlowColor> parseColor() {
         return Optional.ofNullable(colorInput)
-                .filter(s -> !s.isBlank())
-                .flatMap(s -> s.startsWith("#")
-                        ? GlowColor.fromHex(s)
-                        : parseRgb(s));
+            .filter(s -> !s.isBlank())
+            .flatMap(s ->
+                s.startsWith("#") ? GlowColor.fromHex(s) : parseRgb(s)
+            );
     }
 
     private Optional<GlowColor> parseRgb(String input) {

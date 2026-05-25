@@ -2,6 +2,10 @@ package ua.vdev.primeclans;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -28,24 +32,33 @@ import ua.vdev.primeclans.menu.MenuType;
 import ua.vdev.primeclans.storage.StorageManager;
 import ua.vdev.primeclans.storage.listener.StorageListener;
 import ua.vdev.primeclans.util.Papi;
+import ua.vdev.vlibapi.util.LogUtil;
 import ua.vdev.vlibapi.util.Registrar;
 import ua.vdev.vlibapi.util.lang.Translation;
-import ua.vdev.vlibapi.util.LogUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 public final class PrimeClans extends JavaPlugin {
 
-    @Getter private static PrimeClans instance;
-    @Getter private Translation translation;
-    @Getter private ClanManager clanManager;
-    @Getter private EconomyManager economyManager;
-    @Getter private ClanLevelService levelService;
-    @Getter private StorageManager storageManager;
-    @Getter private AddonLoader addonLoader;
+    @Getter
+    private static PrimeClans instance;
+
+    @Getter
+    private Translation translation;
+
+    @Getter
+    private ClanManager clanManager;
+
+    @Getter
+    private EconomyManager economyManager;
+
+    @Getter
+    private ClanLevelService levelService;
+
+    @Getter
+    private StorageManager storageManager;
+
+    @Getter
+    private AddonLoader addonLoader;
+
     private Db database;
     private Economy econ;
     private LogUtil log;
@@ -55,7 +68,14 @@ public final class PrimeClans extends JavaPlugin {
         instance = this;
         log = LogUtil.of(this);
         saveDefaultConfig();
-        List<String> supportedLangs = List.of("ru", "en", "ua", "fr", "by", "es");
+        List<String> supportedLangs = List.of(
+            "ru",
+            "en",
+            "ua",
+            "fr",
+            "by",
+            "es"
+        );
         String language = getConfig().getString("language", "ua");
         translation = new Translation(this);
         translation.load(language, supportedLangs);
@@ -77,23 +97,36 @@ public final class PrimeClans extends JavaPlugin {
         clanManager.startInviteCleanupTask();
 
         if (Bukkit.getPluginManager().getPlugin("packetevents") != null) {
-            PacketEvents.getAPI().getEventManager().registerListener(new GlowPacketListener(clanManager), PacketListenerPriority.NORMAL);
+            PacketEvents.getAPI()
+                .getEventManager()
+                .registerListener(
+                    new GlowPacketListener(clanManager),
+                    PacketListenerPriority.NORMAL
+                );
             Registrar.events(this, new GlowBukkitListener(clanManager));
         } else {
             log.warn("Для глоу нужен PacketEvents");
         }
 
-        getServer().getServicesManager().register(ClanProvider.class, clanManager, this, ServicePriority.Normal);
+        getServer()
+            .getServicesManager()
+            .register(
+                ClanProvider.class,
+                clanManager,
+                this,
+                ServicePriority.Normal
+            );
 
         ClanCommand clanCmd = new ClanCommand(clanManager, storageManager);
         getCommand("clan").setExecutor(clanCmd);
         getCommand("clan").setTabCompleter(clanCmd);
 
-        Registrar.events(this,
-                new PvpListener(clanManager),
-                new MenuListener(),
-                new ClanExpListener(clanManager, levelService),
-                new StorageListener(storageManager)
+        Registrar.events(
+            this,
+            new PvpListener(clanManager),
+            new MenuListener(),
+            new ClanExpListener(clanManager, levelService),
+            new StorageListener(storageManager)
         );
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -125,7 +158,9 @@ public final class PrimeClans extends JavaPlugin {
 
     private boolean setupEconomy() {
         if (Bukkit.getPluginManager().getPlugin("Vault") == null) return false;
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rsp = getServer()
+            .getServicesManager()
+            .getRegistration(Economy.class);
         if (rsp == null || rsp.getProvider() == null) return false;
         econ = rsp.getProvider();
         economyManager = new EconomyManager(econ);
@@ -143,15 +178,19 @@ public final class PrimeClans extends JavaPlugin {
     }
 
     private void initDatabase() {
-        String type = getConfig().getString("settings.database.type", "sqlite").toLowerCase();
+        String type = getConfig()
+            .getString("settings.database.type", "sqlite")
+            .toLowerCase();
         if (type.equals("mysql")) {
-            ConfigurationSection sec = getConfig().getConfigurationSection("settings.database.mysql");
+            ConfigurationSection sec = getConfig().getConfigurationSection(
+                "settings.database.mysql"
+            );
             DbCreds creds = new DbCreds(
-                    sec.getString("host"),
-                    sec.getInt("port"),
-                    sec.getString("database"),
-                    sec.getString("username"),
-                    sec.getString("password")
+                sec.getString("host"),
+                sec.getInt("port"),
+                sec.getString("database"),
+                sec.getString("username"),
+                sec.getString("password")
             );
             database = new MysqlDb(creds);
             log.info("Используется MySQL");

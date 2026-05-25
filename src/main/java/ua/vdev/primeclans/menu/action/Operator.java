@@ -23,8 +23,8 @@ public enum Operator {
 
     public static Optional<Operator> findIn(String text) {
         return Arrays.stream(values())
-                .filter(op -> text.contains(op.getSymbol()))
-                .findFirst();
+            .filter(op -> text.contains(op.getSymbol()))
+            .findFirst();
     }
 
     public boolean evaluate(double left, double right) {

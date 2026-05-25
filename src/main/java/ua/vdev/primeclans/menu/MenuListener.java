@@ -1,5 +1,6 @@
 package ua.vdev.primeclans.menu;
 
+import java.util.Optional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -9,8 +10,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.InventoryHolder;
-
-import java.util.Optional;
+import ua.vdev.vlibapi.util.scheduler.Task;
 
 public class MenuListener implements Listener {
 
@@ -53,7 +53,19 @@ public class MenuListener implements Listener {
         Optional.ofNullable(event.getInventory().getHolder())
                 .filter(MenuHolder.class::isInstance)
                 .map(MenuHolder.class::cast)
-                .map(MenuHolder::getMenuId)
-                .ifPresent(menuId -> MenuManager.closeMenuIfMatching(player, menuId));
+                .ifPresent(menuHolder -> {
+                    String menuId = menuHolder.getMenuId();
+
+                    Task.sync(() -> {
+                        if (!player.isOnline()) return;
+
+                        if (player.getOpenInventory().getTopInventory().getHolder() instanceof MenuHolder currentHolder) {
+                            if (currentHolder.getMenuId().equals(menuId)) {
+                                return;
+                            }
+                        }
+                        MenuManager.closeMenuIfMatching(player, menuId);
+                    });
+                });
     }
 }
