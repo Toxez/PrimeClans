@@ -4,7 +4,6 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
 import ua.vdev.primeclans.PrimeClans;
 import ua.vdev.vlibapi.player.PlayerMsg;
-
 import java.util.Collections;
 import java.util.Map;
 

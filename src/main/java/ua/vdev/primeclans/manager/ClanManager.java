@@ -23,10 +23,8 @@ public class ClanManager implements ClanProvider {
     private final Db db;
     private final Map<String, Clan> clans = new ConcurrentHashMap<>();
     private final Map<UUID, String> playerToClan = new ConcurrentHashMap<>();
-    private final Map<UUID, Map<String, Long>> invites =
-        new ConcurrentHashMap<>();
-    private final Map<String, Long> dirtyClanSchedule =
-        new ConcurrentHashMap<>();
+    private final Map<UUID, Map<String, Long>> invites = new ConcurrentHashMap<>();
+    private final Map<String, Long> dirtyClanSchedule = new ConcurrentHashMap<>();
     private static final long SAVE_DELAY_MS = 5000L;
 
     public void load() {
@@ -34,12 +32,10 @@ public class ClanManager implements ClanProvider {
             clans.clear();
             playerToClan.clear();
             GlowManager.clear();
-            ClanLevelService levelService =
-                PrimeClans.getInstance().getLevelService();
+            ClanLevelService levelService = PrimeClans.getInstance().getLevelService();
             loaded.forEach((lowerName, clan) -> {
                 int calculated = levelService.calculateLevel(clan.exp());
-                Clan fixed =
-                    calculated != clan.level()
+                Clan fixed = calculated != clan.level()
                         ? clan.withExp(clan.exp(), calculated)
                         : clan;
                 if (!fixed.equals(clan)) db.saveClan(fixed);
@@ -75,8 +71,7 @@ public class ClanManager implements ClanProvider {
             long now = System.currentTimeMillis();
             long expireMs = timeout * 1000L;
             invites.forEach((uuid, clanMap) ->
-                clanMap.entrySet().removeIf(e -> now - e.getValue() > expireMs)
-            );
+                clanMap.entrySet().removeIf(e -> now - e.getValue() > expireMs));
             invites.entrySet().removeIf(e -> e.getValue().isEmpty());
         });
     }
@@ -220,7 +215,7 @@ public class ClanManager implements ClanProvider {
     public void removeMember(String clanName, UUID player) {
         getClan(clanName).ifPresent(clan -> {
             ClanEventBus.fireLeave(clan, player);
-            List<Player> viewers = clan
+            List<Player> remainingOnline = clan
                 .members()
                 .stream()
                 .filter(m -> !m.equals(player))
@@ -228,9 +223,12 @@ public class ClanManager implements ClanProvider {
                 .flatMap(Optional::stream)
                 .filter(Player::isOnline)
                 .toList();
-            PlayerFind.uuid(player).ifPresent(removed ->
-                GlowUpdater.sendRealEquipment(removed, viewers)
-            );
+
+            PlayerFind.uuid(player).ifPresent(removed -> {
+                GlowUpdater.sendRealEquipment(removed, remainingOnline);
+                GlowUpdater.sendRealEquipmentToViewer(remainingOnline, removed);
+            });
+
             Set<UUID> newMembers = new HashSet<>(clan.members());
             newMembers.remove(player);
             Clan updated = clan

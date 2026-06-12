@@ -31,34 +31,20 @@ import ua.vdev.primeclans.menu.MenuListener;
 import ua.vdev.primeclans.menu.MenuType;
 import ua.vdev.primeclans.storage.StorageManager;
 import ua.vdev.primeclans.storage.listener.StorageListener;
-import ua.vdev.primeclans.util.Papi;
+import ua.vdev.primeclans.util.scripts.Papi;
 import ua.vdev.vlibapi.util.LogUtil;
 import ua.vdev.vlibapi.util.Registrar;
 import ua.vdev.vlibapi.util.lang.Translation;
 
 public final class PrimeClans extends JavaPlugin {
 
-    @Getter
-    private static PrimeClans instance;
-
-    @Getter
-    private Translation translation;
-
-    @Getter
-    private ClanManager clanManager;
-
-    @Getter
-    private EconomyManager economyManager;
-
-    @Getter
-    private ClanLevelService levelService;
-
-    @Getter
-    private StorageManager storageManager;
-
-    @Getter
-    private AddonLoader addonLoader;
-
+    @Getter private static PrimeClans instance;
+    @Getter private Translation translation;
+    @Getter private ClanManager clanManager;
+    @Getter private EconomyManager economyManager;
+    @Getter private ClanLevelService levelService;
+    @Getter private StorageManager storageManager;
+    @Getter private AddonLoader addonLoader;
     private Db database;
     private Economy econ;
     private LogUtil log;
@@ -68,14 +54,7 @@ public final class PrimeClans extends JavaPlugin {
         instance = this;
         log = LogUtil.of(this);
         saveDefaultConfig();
-        List<String> supportedLangs = List.of(
-            "ru",
-            "en",
-            "ua",
-            "fr",
-            "by",
-            "es"
-        );
+        List<String> supportedLangs = List.of("ru", "en", "ua", "fr", "by", "es");
         String language = getConfig().getString("language", "ua");
         translation = new Translation(this);
         translation.load(language, supportedLangs);
@@ -95,7 +74,6 @@ public final class PrimeClans extends JavaPlugin {
         clanManager.load();
         clanManager.startSaveTask();
         clanManager.startInviteCleanupTask();
-
         if (Bukkit.getPluginManager().getPlugin("packetevents") != null) {
             PacketEvents.getAPI()
                 .getEventManager()
@@ -108,26 +86,17 @@ public final class PrimeClans extends JavaPlugin {
             log.warn("Для глоу нужен PacketEvents");
         }
 
-        getServer()
-            .getServicesManager()
-            .register(
-                ClanProvider.class,
-                clanManager,
-                this,
-                ServicePriority.Normal
-            );
+        getServer().getServicesManager().register(ClanProvider.class, clanManager, this, ServicePriority.Normal);
 
         ClanCommand clanCmd = new ClanCommand(clanManager, storageManager);
         getCommand("clan").setExecutor(clanCmd);
         getCommand("clan").setTabCompleter(clanCmd);
 
-        Registrar.events(
-            this,
+        Registrar.events(this,
             new PvpListener(clanManager),
             new MenuListener(),
             new ClanExpListener(clanManager, levelService),
-            new StorageListener(storageManager)
-        );
+            new StorageListener(storageManager));
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new Papi().register();

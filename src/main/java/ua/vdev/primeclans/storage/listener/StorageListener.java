@@ -1,5 +1,8 @@
 package ua.vdev.primeclans.storage.listener;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,10 +14,6 @@ import ua.vdev.primeclans.menu.action.MenuAction;
 import ua.vdev.primeclans.storage.StorageHolder;
 import ua.vdev.primeclans.storage.StorageManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class StorageListener implements Listener {
 
     private final StorageManager storageManager;
@@ -25,28 +24,33 @@ public class StorageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent e) {
-        if (!(e.getInventory().getHolder() instanceof StorageHolder holder)) return;
+        if (
+            !(e.getInventory().getHolder() instanceof StorageHolder holder)
+        ) return;
         if (!(e.getWhoClicked() instanceof Player player)) return;
         int rawSlot = e.getRawSlot();
         if (rawSlot < 0) return;
-        boolean isTopInventory = rawSlot < e.getView().getTopInventory().getSize();
+        boolean isTopInventory =
+            rawSlot < e.getView().getTopInventory().getSize();
 
         if (isTopInventory) {
             if (holder.getAllowedSlots().contains(rawSlot)) return;
             e.setCancelled(true);
-            if (e.getClick() == ClickType.SWAP_OFFHAND || e.getClick() == ClickType.NUMBER_KEY) {
+            if (
+                e.getClick() == ClickType.SWAP_OFFHAND ||
+                e.getClick() == ClickType.NUMBER_KEY
+            ) {
                 return;
             }
 
             List<MenuAction> actions = e.getClick().isLeftClick()
-                    ? holder.getLeftActions().get(rawSlot)
-                    : holder.getRightActions().get(rawSlot);
+                ? holder.getLeftActions().get(rawSlot)
+                : holder.getRightActions().get(rawSlot);
 
             if (actions != null) {
                 actions.forEach(action -> action.execute(player));
             }
-        }
-        else {
+        } else {
             if (e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
                 handleShiftClick(e, holder);
             }
@@ -58,7 +62,9 @@ public class StorageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDrag(InventoryDragEvent e) {
-        if (!(e.getInventory().getHolder() instanceof StorageHolder holder)) return;
+        if (
+            !(e.getInventory().getHolder() instanceof StorageHolder holder)
+        ) return;
         int topSize = e.getView().getTopInventory().getSize();
         for (int slot : e.getRawSlots()) {
             if (slot < topSize && !holder.getAllowedSlots().contains(slot)) {
@@ -88,7 +94,11 @@ public class StorageListener implements Listener {
         Collections.sort(sortedSlots);
         for (int slot : sortedSlots) {
             ItemStack inSlot = topInv.getItem(slot);
-            if (inSlot != null && inSlot.isSimilar(current) && inSlot.getAmount() < inSlot.getMaxStackSize()) {
+            if (
+                inSlot != null &&
+                inSlot.isSimilar(current) &&
+                inSlot.getAmount() < inSlot.getMaxStackSize()
+            ) {
                 int space = inSlot.getMaxStackSize() - inSlot.getAmount();
                 int toAdd = Math.min(space, amountLeft);
 

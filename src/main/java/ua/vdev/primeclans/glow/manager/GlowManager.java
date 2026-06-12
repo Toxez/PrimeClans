@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class GlowManager {
     private static final Set<UUID> ENABLED = ConcurrentHashMap.newKeySet();
-
     private GlowManager() {}
 
     public static void enable(Player player) {
