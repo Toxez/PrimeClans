@@ -1,5 +1,6 @@
 package ua.vdev.primeclans.command;
 
+import java.util.*;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
@@ -12,14 +13,11 @@ import ua.vdev.primeclans.storage.StorageManager;
 import ua.vdev.primeclans.util.Lang;
 import ua.vdev.vlibapi.player.PlayerFind;
 
-import java.util.*;
-
 public class ClanCommand implements CommandExecutor, TabCompleter {
 
     private final Map<String, SubCommand> subCommands = new HashMap<>();
     private final ClanManager clanManager;
 
-    // Передаем StorageManager в конструктор
     public ClanCommand(ClanManager clanManager, StorageManager storageManager) {
         this.clanManager = clanManager;
         subCommands.put("create", new CreateSub(clanManager));
@@ -45,24 +43,23 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         if (!(sender instanceof Player player)) return true;
 
         String subName = (args.length > 0) ? args[0].toLowerCase() : "";
-        boolean inClan = clanManager.getPlayerClan(player.getUniqueId()).isPresent();
+        boolean inClan = clanManager
+            .getPlayerClan(player.getUniqueId())
+            .isPresent();
 
         if (subName.equals("create") && inClan) {
             Lang.send(player, "create.already-in-clan");
             return true;
         }
 
-        Optional.ofNullable(subCommands.get(subName))
-                .ifPresentOrElse(
-                        sub -> sub.execute(player, args),
-                        () -> {
-                            ClanCommandRegistry.get(subName)
-                                    .ifPresentOrElse(
-                                            addonSub -> addonSub.execute(player, args),
-                                            () -> showHelp(player, inClan)
-                                    );
-                        }
+        Optional.ofNullable(subCommands.get(subName)).ifPresentOrElse(
+            sub -> sub.execute(player, args), () -> {
+                ClanCommandRegistry.get(subName).ifPresentOrElse(
+                    addonSub -> addonSub.execute(player, args),
+                    () -> showHelp(player, inClan)
                 );
+            }
+        );
 
         return true;
     }
@@ -72,7 +69,9 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
         if (!(sender instanceof Player player)) return Collections.emptyList();
 
         String input = args.length > 0 ? args[args.length - 1].toLowerCase() : "";
-        boolean inClan = clanManager.getPlayerClan(player.getUniqueId()).isPresent();
+        boolean inClan = clanManager
+            .getPlayerClan(player.getUniqueId())
+            .isPresent();
 
         if (args.length == 1) {
             return getAvailableSubCommands(inClan, input);
@@ -82,8 +81,12 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
             String sub = args[0].toLowerCase();
 
             List<String> coreTab = switch (sub) {
-                case "invite" -> inClan ? suggestOnlinePlayers(player, input) : List.of();
-                case "kick", "setleader" -> inClan ? suggestClanMembers(player, input) : List.of();
+                case "invite" -> inClan
+                    ? suggestOnlinePlayers(player, input)
+                    : List.of();
+                case "kick", "setleader" -> inClan
+                    ? suggestClanMembers(player, input)
+                    : List.of();
                 case "accept" -> !inClan ? suggestClanNames(input) : List.of();
                 default -> null;
             };
@@ -91,8 +94,8 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
             if (coreTab != null) return coreTab;
 
             return ClanCommandRegistry.get(sub)
-                    .map(addonSub -> addonSub.tabComplete(player, args))
-                    .orElse(List.of());
+                .map(addonSub -> addonSub.tabComplete(player, args))
+                .orElse(List.of());
         }
 
         return Collections.emptyList();
@@ -101,54 +104,67 @@ public class ClanCommand implements CommandExecutor, TabCompleter {
     private List<String> getAvailableSubCommands(boolean inClan, String input) {
         Set<String> allowed = new HashSet<>(inClan
                 ? Set.of("delete", "invite", "kick", "leave", "setleader", "chat", "menu", "pvp", "balance", "invest", "withdraw", "info", "glow", "storage")
-                : Set.of("create", "accept")
-        );
+                : Set.of("create", "accept"));
 
         ClanCommandRegistry.getAll().forEach((name, cmd) -> {
             if (inClan && !cmd.requiresNoClan()) allowed.add(name);
             if (!inClan && !cmd.requiresClan()) allowed.add(name);
         });
 
-        return allowed.stream()
-                .filter(name -> name.startsWith(input))
-                .sorted()
-                .toList();
+        return allowed
+            .stream()
+            .filter(name -> name.startsWith(input))
+            .sorted()
+            .toList();
     }
 
     private List<String> suggestOnlinePlayers(Player sender, String input) {
         return PlayerFind.all()
-                .except(sender)
-                .matching(p -> p.getName().toLowerCase().startsWith(input))
-                .asNames()
-                .stream()
-                .sorted()
-                .toList();
+            .except(sender)
+            .matching(p -> p.getName().toLowerCase().startsWith(input))
+            .asNames()
+            .stream()
+            .sorted()
+            .toList();
     }
 
     private List<String> suggestClanMembers(Player sender, String input) {
-        return clanManager.getPlayerClan(sender.getUniqueId())
-                .map(clan -> clan.members().stream()
-                        .map(Bukkit::getOfflinePlayer)
-                        .map(OfflinePlayer::getName)
-                        .filter(Objects::nonNull)
-                        .filter(name -> !name.equalsIgnoreCase(sender.getName()))
-                        .filter(name -> name.toLowerCase().startsWith(input))
-                        .sorted()
-                        .toList())
-                .orElse(List.of());
+        return clanManager
+            .getPlayerClan(sender.getUniqueId())
+            .map(clan ->
+                clan
+                    .members()
+                    .stream()
+                    .map(Bukkit::getOfflinePlayer)
+                    .map(OfflinePlayer::getName)
+                    .filter(Objects::nonNull)
+                    .filter(name -> !name.equalsIgnoreCase(sender.getName()))
+                    .filter(name -> name.toLowerCase().startsWith(input))
+                    .sorted()
+                    .toList()
+            )
+            .orElse(List.of());
     }
 
     private List<String> suggestClanNames(String input) {
-        return clanManager.getClanNames().stream()
-                .filter(name -> name.toLowerCase().startsWith(input))
-                .sorted()
-                .toList();
+        return clanManager
+            .getClanNames()
+            .stream()
+            .filter(name -> name.toLowerCase().startsWith(input))
+            .sorted()
+            .toList();
     }
 
     private void showHelp(Player player, boolean inClan) {
-        if (inClan) {
-            clanManager.getPlayerClan(player.getUniqueId()).ifPresent(clan ->
-                    Lang.send(player, "help.in-clan", Map.of("clan", clan.name())));
+        if (inClan) {clanManager
+                .getPlayerClan(player.getUniqueId())
+                .ifPresent(clan ->
+                    Lang.send(
+                        player,
+                        "help.in-clan",
+                        Map.of("clan", clan.name())
+                    )
+                );
         } else {
             Lang.send(player, "help.no-clan");
         }

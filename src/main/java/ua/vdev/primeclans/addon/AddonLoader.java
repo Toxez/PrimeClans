@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 public class AddonLoader implements Closeable {
 
     private static final Logger LOGGER = Logger.getLogger("PrimeClans#AddonLoader");
-
     private final File addonsFolder;
     private final Map<String, AbstractAddon> addons = new ConcurrentHashMap<>();
     private final List<AddonClassLoader> classLoaders = new CopyOnWriteArrayList<>();
