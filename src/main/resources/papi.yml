@@ -1,0 +1,16 @@
+# Настройки отображения плейсхолдеров если = null
+#
+# %primeclans_name% - Название клана
+# %primeclans_level% - Текущий уровень клана
+# %primeclans_people% - Количество участников в клане
+# %primeclans_balance% - Баланс казны клана
+# %primeclans_exp% - Текущий опыт клана
+# %primeclans_exp_to_next% - Сколько опыта осталось до следующего уровня
+#
+no-clan:
+  name: "&cНет клана"
+  level: "&c0"
+  people: "&c0"
+  balance: "&c0"
+  exp: "&c0"
+  exp_to_next: "&c0"

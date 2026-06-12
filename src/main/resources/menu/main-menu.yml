@@ -121,7 +121,6 @@ menu:
               else:
                 - "[actionbar] <red>нету времени 10ч;60"
                 - "[sound] ENTITY_VILLAGER_NO;1.0;1.0"
-
           else:
             # Если вообще не лидер ну по 1 проверке
             - "[message] <gray>нет"

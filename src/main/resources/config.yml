@@ -37,8 +37,8 @@ settings:
     owner: "<#F0DB46>Лидер"
     member: "<gray>Участник"
   player-status:
-    online: '<#62DE3F>Онлайн'
-    offline: '<#FF0000>Офлайн'
+    online: "<#62DE3F>Онлайн"
+    offline: "<#FF0000>Офлайн"
   pvp-status:
     enabled: "<#62DE3F>Включен"
     disabled: "<#FF0000>Выключен"
